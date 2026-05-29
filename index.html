@@ -1,537 +1,1007 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Tallinn · September</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
-
-<style>
-:root {
-  --cream:#f4ede0; --cream-dark:#e8ddc8; --parchment:#faf6ee;
-  --navy:#1a2744; --navy-faint:rgba(26,39,68,0.07); --navy-faint2:rgba(26,39,68,0.13);
-  --gold:#b8892e; --gold-light:#d4a84b; --gold-pale:rgba(184,137,46,0.13);
-  --text-dim:rgba(26,39,68,0.55); --divider:rgba(26,39,68,0.1);
-}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;overflow:hidden;background:#ddd4be;overscroll-behavior:none;}
-body{font-family:Palatino,'Palatino Linotype','Book Antiqua',Georgia,serif;color:var(--navy);}
-#app{max-width:480px;margin:0 auto;height:100vh;height:100dvh;display:flex;flex-direction:column;background:var(--parchment);position:relative;overflow:hidden;}
-.screen{flex:1;overflow:hidden;display:none;flex-direction:column;}
-.screen.active{display:flex;}
-
-/* ── HOME ── */
-#s-home{background:var(--parchment);overflow-y:auto;}
-.home-cover{padding:48px 26px 24px;background:linear-gradient(175deg,#faf6ee 0%,#f4ede0 60%,#ede0c8 100%);position:relative;border-bottom:1px solid var(--divider);}
-.home-cover::after{content:'';position:absolute;bottom:0;left:0;right:0;height:40px;background:linear-gradient(0deg,rgba(244,237,224,0.5),transparent);}
-.h-eye{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
-.h-ttl{font-family:Georgia,'Times New Roman',serif;font-size:52px;line-height:.95;font-weight:700;color:var(--navy);}
-.h-sub{font-family:Georgia,'Times New Roman',serif;font-size:15px;color:var(--gold);letter-spacing:3px;text-transform:uppercase;font-weight:400;margin-top:6px;margin-bottom:20px;}
-.h-div{width:32px;height:1px;background:var(--gold);opacity:.6;margin-bottom:14px;}
-.h-tagline{font-size:14px;color:var(--text-dim);font-style:italic;}
-.home-section{padding:20px 22px;border-bottom:1px solid var(--divider);}
-.home-section:last-child{border-bottom:none;padding-bottom:100px;}
-.hs-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
-.flight-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;padding:12px;background:var(--navy-faint);border-radius:8px;border:1px solid var(--navy-faint2);}
-.fr-icon{font-size:18px;flex-shrink:0;}
-.fr-body{flex:1;}
-.fr-ttl{font-family:Georgia,'Times New Roman',serif;font-size:14px;color:var(--navy);}
-.fr-sub{font-size:11px;color:var(--text-dim);font-style:italic;}
-.fr-badge{font-size:10px;background:var(--navy);color:var(--cream);padding:2px 8px;border-radius:20px;white-space:nowrap;}
-.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.info-card{background:var(--navy-faint);border:1px solid var(--navy-faint2);border-radius:8px;padding:12px;}
-.ic-l{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:4px;}
-.ic-v{font-size:13px;color:var(--navy);}
-.nav-hint{display:flex;gap:8px;flex-wrap:wrap;}
-.nh{display:flex;align-items:center;gap:6px;background:var(--navy-faint);border:1px solid var(--navy-faint2);border-radius:20px;padding:8px 14px;cursor:pointer;transition:background .2s;}
-.nh:hover{background:var(--navy-faint2);}
-.nh-icon{font-size:16px;}
-.nh-text{font-size:13px;color:var(--navy);}
-
-/* ── PLAN ── */
-#s-plan{background:var(--parchment);}
-.plan-header{padding:34px 22px 12px;border-bottom:1px solid var(--divider);}
-.plan-header-eye{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:3px;}
-.plan-header-title{font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:400;color:var(--navy);}
-.day-tabs{display:flex;border-bottom:1px solid var(--divider);background:var(--parchment);}
-.day-tab{flex:1;padding:10px 0;text-align:center;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);border-bottom:2px solid transparent;cursor:pointer;background:transparent;border-top:none;border-left:none;border-right:none;font-family:Palatino,'Palatino Linotype','Book Antiqua',Georgia,serif;transition:color .2s;}
-.day-tab.active{color:var(--navy);border-bottom-color:var(--gold);}
-.day-content{flex:1;overflow-y:auto;padding:14px 22px 90px;scrollbar-width:none;}
-.day-content::-webkit-scrollbar{display:none;}
-.it-item{display:flex;gap:12px;margin-bottom:18px;position:relative;}
-.it-item::before{content:'';position:absolute;left:13px;top:30px;bottom:-18px;width:1px;background:linear-gradient(180deg,rgba(184,137,46,0.35) 0%,rgba(184,137,46,0.05) 100%);}
-.it-item:last-child::before{display:none;}
-.it-ico{width:28px;height:28px;border-radius:50%;background:var(--gold-pale);border:1px solid rgba(184,137,46,0.35);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;position:relative;z-index:1;}
-.it-body{flex:1;padding-top:3px;}
-.it-time{font-size:9px;color:var(--gold);letter-spacing:1px;margin-bottom:2px;}
-.it-name{font-family:Georgia,'Times New Roman',serif;font-size:14px;color:var(--navy);margin-bottom:2px;}
-.it-desc{font-size:11px;color:var(--text-dim);line-height:1.5;font-style:italic;}
-.it-link{font-size:10px;color:var(--gold);margin-top:3px;cursor:pointer;text-decoration:underline;text-underline-offset:2px;}
-
-/* ── MAP ── */
-#s-map{flex-direction:column;}
-#map-filters{padding:8px 12px;background:var(--parchment);border-bottom:1px solid var(--divider);display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;flex-shrink:0;}
-#map-filters::-webkit-scrollbar{display:none;}
-.filter-btn{flex-shrink:0;padding:5px 11px;border:1px solid var(--navy-faint2);background:transparent;color:var(--text-dim);font-family:Palatino,'Palatino Linotype','Book Antiqua',Georgia,serif;font-size:11px;letter-spacing:1px;border-radius:20px;cursor:pointer;transition:all .2s;white-space:nowrap;}
-.filter-btn.active{color:var(--navy);border-color:var(--navy);background:var(--navy-faint);}
-#map{flex:1;min-height:0;touch-action:none;overscroll-behavior:none;}
-
-/* ── DETAIL PANEL ── */
-#detail-overlay{position:fixed;inset:0;background:rgba(26,39,68,0.3);opacity:0;pointer-events:none;transition:opacity .3s;z-index:500;}
-#detail-overlay.open{opacity:1;pointer-events:all;}
-#detail-panel{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);width:100%;max-width:480px;background:var(--parchment);border-radius:20px 20px 0 0;box-shadow:0 -8px 40px rgba(26,39,68,0.18);transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:501;padding:0 0 90px;}
-#detail-panel.open{transform:translateX(-50%) translateY(0);}
-.dp-handle{width:36px;height:4px;background:rgba(26,39,68,0.18);border-radius:2px;margin:10px auto 16px;}
-.dp-cat-badge{display:inline-block;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--cream);padding:3px 10px;border-radius:2px;margin:0 20px 8px;font-weight:600;}
-.dp-title{font-family:Georgia,'Times New Roman',serif;font-size:22px;color:var(--navy);padding:0 20px 6px;font-weight:600;line-height:1.2;}
-.dp-day{display:inline-flex;align-items:center;gap:4px;background:var(--gold-pale);border:1px solid rgba(184,137,46,0.25);border-radius:20px;padding:4px 12px;font-size:10px;color:var(--gold);margin:0 20px 12px;letter-spacing:1px;}
-.dp-desc{font-size:13px;color:var(--text-dim);line-height:1.7;font-style:italic;margin:0 20px 16px;border-left:2px solid rgba(184,137,46,0.4);padding-left:12px;}
-.dp-maps{display:block;margin:0 20px;padding:12px;background:transparent;border:1px solid rgba(26,39,68,0.28);color:var(--navy);font-family:Palatino,'Palatino Linotype','Book Antiqua',Georgia,serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;border-radius:4px;text-align:center;text-decoration:none;transition:background .2s;}
-.dp-maps:hover{background:var(--navy-faint);}
-.dp-close{position:absolute;top:14px;right:18px;background:var(--navy-faint);border:none;border-radius:50%;width:30px;height:30px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-dim);}
-
-/* ── MEHR ── */
-#s-mehr{}
-.mehr-header{padding:34px 22px 16px;border-bottom:1px solid var(--divider);}
-.mehr-header-eye{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:3px;}
-.mehr-header-title{font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:400;color:var(--navy);}
-.mehr-cat-section{border-bottom:1px solid var(--divider);}
-.mehr-cat-header{display:flex;align-items:center;gap:10px;padding:14px 22px 10px;cursor:pointer;}
-.mehr-cat-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-.mehr-cat-name{font-family:Georgia,'Times New Roman',serif;font-size:16px;color:var(--navy);}
-.mehr-cat-count{font-size:11px;color:var(--text-dim);margin-left:auto;}
-.mehr-place-list{padding:0 22px 12px;}
-.mehr-place-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--navy-faint);cursor:pointer;transition:background .15s;}
-.mehr-place-item:last-child{border-bottom:none;}
-.mpi-emoji{font-size:16px;width:24px;text-align:center;flex-shrink:0;}
-.mpi-name{font-size:13px;color:var(--navy);flex:1;}
-.mpi-arrow{font-size:12px;color:var(--text-dim);}
-.mehr-place-item:hover .mpi-name{color:var(--gold);}
-
-/* ── BOTTOM NAV ── */
-#bottom-nav{display:flex;border-top:1px solid var(--divider);background:rgba(250,246,238,0.97);backdrop-filter:blur(10px);position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;z-index:100;}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 0 12px;background:transparent;border:none;cursor:pointer;opacity:.32;transition:opacity .2s;font-family:Palatino,'Palatino Linotype','Book Antiqua',Georgia,serif;}
-.nav-btn.active{opacity:1;}
-.nav-btn:hover{opacity:.65;}
-.nb-icon{font-size:20px;}
-.nb-label{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--navy);}
-.nav-btn.active .nb-label{color:var(--gold);}
-
-/* ── MAP PIN CSS ── */
-.custom-marker{background:transparent!important;border:none!important;}
-.pin{width:30px;height:30px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,0.3);border:2px solid rgba(255,255,255,0.8);}
-.pin span{transform:rotate(45deg);display:block;font-size:13px;}
-.pin-home{border:3px solid gold!important;box-shadow:0 3px 12px rgba(0,0,0,0.4)!important;}
-</style>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <meta name="apple-mobile-web-app-title" content="Italiano"/>
+  <title>Italiano</title>
+  <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAD00lEQVR4nO3cMUsjaRzH8Yy450EKFa40HNdvtdU2Voe32hxy4AuwV/CNCGH3DfgC7IO11VULx11ncaDdFSEgHFa5wj3XVX8xiZnE5Pl8KovJ80zgy38mA07V7/cbtak+fahj2f7hWR3L1urz2/ezPoWRLU92uZpqYCYmE4cmFtJL45DFAhs/DlksvHHikEUhlkb9gDLKMVocyijKsJcVWRRoqMmhjDI9H4cyivVMHMoo2aA4lFG4GIcyGPk5B+V4Og5jg8aTcSiDWw/jUAZ33HMQfROHscF9JgfR1ziMDR4wOYi+xGFs8JjJQSQOoqWGawqByUEkDiJxEImDaMndKInJQSQOInEQiYNIHETiIBIHkTiIxEEkDiJxEImDSBxE4iASB5E4iMRBJA4icRCJg0gcROIgEgeROIjEQSQOInEQiYNIHETiIBIHkTiIxEEkDiJxEImDSBxE4iASB5E4puT7n36c9SmMTBxEZcXR6/WqqlpbW5v+1r9d/PHur9//vvl3+luPbY7jODo6qqqqqqqzs7MBh62vr1f/ezKL+wc8dnx8PGDxnZ2dAZ/d2tp64XecrTmOg7otz/oExtdut9vt9pAHd7vdwVeTZw8YoNPpbG9vj/fZ18zkIBIHkTiIio7j5OSk1Wr1er1adzk/P2+1WhcXF7XuUoc5viF9uevr66urq7p3ubm5mcIudSg6jv39/d3d3du/V1dXa9plc3Pz8vLyz59/bTQaPyy/qWmXOhQdR7PZbDabde+ysrKysbHxz5vv6t5o4oq+52AwcRCJg0gcROIgEgeROIjEQSQOInEQiYNIHETiIBIHkTiIxEEkDiJxEImDSBxE4iASB9Hi/2tCt9utb/FOp1Pf4jNnchCVFUfdr33a29urqur09LSm9adsjuO4e+3T8IbP4uDgYNTFFymLW3McB3WrGh9/mfU5jKx/OOgNca/T57fvZ30KIzM5iMRBJA4icRCJg0gcROIgEgeROIjEQSQOInEQiYNIHETiIBIHkTiIxEEkDiJxEImDSBxE4iASB5E4iMRBJA4icRCJg0gcROIgEgeROIjEQSQOInEQiYNoaR7fzMd0mBxE4iASB5E4iJYa8/m2aKbA5CASB9GXOFxZeMzkIPoah+HBAyYH0TdxGB7cZ3IQPYzD8ODOE5NDH9x6+rKiDxruORggxmF4MGhy6KNwz1xW9FGy5+859FGsoW5I9VGmYX+t9A/PJFKa0X7K6qMoIz/n0Ec5xnkI5hJTiPGfkEpk4b308blEFtjyRFa566P69GEiC/IaTCaOOw+miFbm2n/hSaJgzlJI2AAAAABJRU5ErkJggg=="/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+    body{background:#F5F7F5;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;overscroll-behavior:none;}
+    ::-webkit-scrollbar{display:none;}
+    @keyframes fi{from{opacity:0}to{opacity:1}}
+    .fi{animation:fi 0.2s ease both;}
+  </style>
 </head>
 <body>
-<div id="app">
-
-<!-- ── HOME ── -->
-<div class="screen active" id="s-home">
-  <div class="home-cover">
-    <div class="h-eye">Reiseunterlagen · 04.–06. September 2026</div>
-    <div class="h-ttl">Tallinn</div>
-    <div class="h-sub">Estland</div>
-    <div class="h-div"></div>
-    <div class="h-tagline">Mittelalter trifft nordische Moderne.</div>
-  </div>
-  <div class="home-section">
-    <div class="hs-label">Flugdetails</div>
-    <div class="flight-row">
-      <div class="fr-icon">✈️</div>
-      <div class="fr-body">
-        <div class="fr-ttl">Wien → Tallinn</div>
-        <div class="fr-sub">Fr 04.09. · BT 832 · 08:30–11:50 · Direktflug</div>
-      </div>
-      <div class="fr-badge">Hinflug</div>
-    </div>
-    <div class="flight-row">
-      <div class="fr-icon">✈️</div>
-      <div class="fr-body">
-        <div class="fr-ttl">Tallinn → Riga → Wien</div>
-        <div class="fr-sub">So 06.09. · BT 314+273 · 15:15–19:40 · via Riga</div>
-      </div>
-      <div class="fr-badge">Rückflug</div>
-    </div>
-  </div>
-  <div class="home-section">
-    <div class="hs-label">Stadt-Info</div>
-    <div class="info-grid">
-      <div class="info-card"><div class="ic-l">Land</div><div class="ic-v">Estland</div></div>
-      <div class="info-card"><div class="ic-l">Währung</div><div class="ic-v">Euro (€)</div></div>
-      <div class="info-card"><div class="ic-l">Einwohner</div><div class="ic-v">ca. 460.000</div></div>
-      <div class="info-card"><div class="ic-l">Zeitzone</div><div class="ic-v">Wien +1h</div></div>
-      <div class="info-card"><div class="ic-l">Sprache</div><div class="ic-v">Estnisch</div></div>
-      <div class="info-card"><div class="ic-l">Transfer</div><div class="ic-v">Bolt · 15 Min</div></div>
-    </div>
-  </div>
-  <div class="home-section">
-    <div class="hs-label">Navigation</div>
-    <div class="nav-hint">
-      <div class="nh" onclick="nav('plan')"><span class="nh-icon">📅</span><span class="nh-text">Reiseplan</span></div>
-      <div class="nh" onclick="nav('map')"><span class="nh-icon">📍</span><span class="nh-text">Karte</span></div>
-      <div class="nh" onclick="nav('mehr')"><span class="nh-icon">☰</span><span class="nh-text">Alle Orte</span></div>
-    </div>
-  </div>
-</div>
-
-<!-- ── PLAN ── -->
-<div class="screen" id="s-plan">
-  <div class="plan-header">
-    <div class="plan-header-eye">Das Wochenende</div>
-    <div class="plan-header-title">Reiseplan</div>
-  </div>
-  <div class="day-tabs">
-    <button class="day-tab active" onclick="showDay('fr',this)">Freitag</button>
-    <button class="day-tab" onclick="showDay('sa',this)">Samstag</button>
-    <button class="day-tab" onclick="showDay('so',this)">Sonntag</button>
-  </div>
-  <div class="day-content" id="day-content"></div>
-</div>
-
-<!-- ── MAP ── -->
-<div class="screen" id="s-map">
-  <div id="map-filters">
-    <button class="filter-btn active" onclick="filterMap('all',this)">Alle</button>
-    <button class="filter-btn" onclick="filterMap('hotel',this)">🏨 Hotels</button>
-    <button class="filter-btn" onclick="filterMap('sightseeing',this)">⭐ Sightseeing</button>
-    <button class="filter-btn" onclick="filterMap('viewpoint',this)">🔭 Aussicht</button>
-    <button class="filter-btn" onclick="filterMap('restaurant',this)">🍽️ Essen</button>
-    <button class="filter-btn" onclick="filterMap('cafe',this)">☕ Cafés</button>
-    <button class="filter-btn" onclick="filterMap('bar',this)">🍸 Bars</button>
-    <button class="filter-btn" onclick="filterMap('kultur',this)">🎭 Kultur</button>
-    <button class="filter-btn" onclick="filterMap('streetart',this)">🎨 Street Art</button>
-    <button class="filter-btn" onclick="filterMap('park',this)">🌿 Parks</button>
-  </div>
-  <div id="map"></div>
-</div>
-
-<!-- ── MEHR ── -->
-<div class="screen" id="s-mehr">
-  <div class="mehr-header">
-    <div class="mehr-header-eye">Entdecken</div>
-    <div class="mehr-header-title">Alle Orte</div>
-  </div>
-  <div id="mehr-content" style="flex:1;overflow-y:auto;padding-bottom:20px;"></div>
-</div>
-
-<!-- ── IMPRESSUM ── -->
-<div class="screen" id="s-impr">
-  <div style="padding:34px 22px 16px;border-bottom:1px solid var(--divider);">
-    <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:3px;">Rechtliches</div>
-    <div style="font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:400;color:var(--navy);">Impressum</div>
-  </div>
-  <div style="overflow-y:auto;padding:20px 22px 90px;scrollbar-width:none;">
-    <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid rgba(184,137,46,0.2);">Betreiber</div>
-    <div style="font-size:14px;color:var(--navy);line-height:2;margin-bottom:20px;">
-      Clemens Schleinzer<br>
-      Enzersdorfer Straße 9/2/2<br>
-      2401 Fischamend<br>
-      Österreich<br>
-      <a href="mailto:schleinzer@gmail.com" style="color:var(--gold);text-decoration:none;">schleinzer@gmail.com</a>
-    </div>
-    <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid rgba(184,137,46,0.2);">Zweck</div>
-    <div style="font-size:13px;color:var(--text-dim);line-height:1.7;font-style:italic;margin-bottom:20px;">
-      Diese Website ist eine private, nicht-kommerzielle Reise-App und dient ausschließlich persönlichen Zwecken. Es werden keine personenbezogenen Daten gespeichert oder verarbeitet.
-    </div>
-    <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid rgba(184,137,46,0.2);">Datenschutz</div>
-    <div style="font-size:13px;color:var(--text-dim);line-height:1.7;font-style:italic;margin-bottom:8px;">
-      Für die Kartendarstellung werden Kacheln von <a href="https://www.openstreetmap.org/copyright" target="_blank" style="color:var(--gold);text-decoration:none;">OpenStreetMap</a> und <a href="https://carto.com/privacy" target="_blank" style="color:var(--gold);text-decoration:none;">CARTO</a> geladen. Dabei wird Ihre IP-Adresse an diese Dienste übertragen.
-    </div>
-    <div style="font-size:13px;color:var(--text-dim);line-height:1.7;font-style:italic;">
-      Alle verwendeten Schriften sind systemseitig installiert — es werden keine externen Schriftdienste aufgerufen.
-    </div>
-  </div>
-</div>
-
-<!-- ── BOTTOM NAV ── -->
-<nav id="bottom-nav">
-  <button class="nav-btn active" id="btn-home" onclick="nav('home')">
-    <span class="nb-icon">🏠</span><span class="nb-label">Home</span>
-  </button>
-  <button class="nav-btn" id="btn-plan" onclick="nav('plan')">
-    <span class="nb-icon">📅</span><span class="nb-label">Plan</span>
-  </button>
-  <button class="nav-btn" id="btn-map" onclick="nav('map')">
-    <span class="nb-icon">📍</span><span class="nb-label">Karte</span>
-  </button>
-  <button class="nav-btn" id="btn-mehr" onclick="nav('mehr')">
-    <span class="nb-icon">☰</span><span class="nb-label">Mehr</span>
-  </button>
-  <button class="nav-btn" id="btn-impr" onclick="nav('impr')">
-    <span class="nb-icon">§</span><span class="nb-label">Impressum</span>
-  </button>
-</nav>
-
-<!-- ── DETAIL PANEL ── -->
-<div id="detail-overlay" onclick="closeDetail()"></div>
-<div id="detail-panel">
-  <div class="dp-handle"></div>
-  <button class="dp-close" onclick="closeDetail()">✕</button>
-  <div id="dp-cat" class="dp-cat-badge"></div>
-  <div id="dp-title" class="dp-title"></div>
-  <div id="dp-day-wrap" class="dp-day" style="display:none;">
-    <span>📅</span><span id="dp-day"></span>
-  </div>
-  <div id="dp-desc" class="dp-desc"></div>
-  <a id="dp-maps" class="dp-maps" href="#" target="_blank">In Google Maps öffnen ↗</a>
-</div>
-
-</div><!-- /#app -->
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script>
-// ── DATA ──────────────────────────────────────────────────────────────
-const CATS = {
-  hotel:       { label:'Hotel',        color:'#1e4d8c', emoji:'🏨' },
-  sightseeing: { label:'Sightseeing',  color:'#b8892e', emoji:'⭐' },
-  viewpoint:   { label:'Aussichtspunkt',color:'#006b8e',emoji:'🔭' },
-  restaurant:  { label:'Restaurant',   color:'#c0622a', emoji:'🍽️' },
-  cafe:        { label:'Café',         color:'#7a5c10', emoji:'☕' },
-  bar:         { label:'Bar',          color:'#5b2d8e', emoji:'🍸' },
-  kultur:      { label:'Kultur/Museum',color:'#1a7a5e', emoji:'🎭' },
-  streetart:   { label:'Street Art',   color:'#7000b4', emoji:'🎨' },
-  park:        { label:'Park',         color:'#2d7a2d', emoji:'🌿' },
-};
+var h=React.createElement,useState=React.useState,useEffect=React.useEffect,useRef=React.useRef;
 
-const places = [
-  // HOTELS
-  {id:1,name:'Nunne Boutique Hotel',cat:'hotel',lat:59.4363,lng:24.7374,emoji:'🏨',desc:'Modern renoviert, ruhige Ecke der Altstadt, gute Schalldämmung. 3–5 Min zu Fuß ins Zentrum. Weniger Bars direkt vor der Tür.'},
-  {id:2,name:'Hotel Regent Tallinn',cat:'hotel',lat:59.4370,lng:24.7496,emoji:'🏨',desc:'Sehr atmosphärisch & elegant. Kleine, exklusive Boutiquehotel-Stimmung. Ruhiger Altstadtrand, hochwertige Ausstattung.'},
-  {id:3,name:'Swissötel Tallinn',cat:'hotel',lat:59.4361,lng:24.7537,emoji:'🏨',desc:'Beste Schalldämmung, große moderne Zimmer, sehr ruhig. Komfortables Businesshotel-Niveau. Toller Blick über Tallinn.'},
-  // SIGHTSEEING
-  {id:4,name:'Tallinner Altstadt (UNESCO)',cat:'sightseeing',lat:59.4370,lng:24.7452,emoji:'🏰',desc:'Mittelalterliche Gassen, Türme, Innenhöfe und Kopfsteinpflaster — das Herz der Stadt. UNESCO-Weltkulturerbe.',day:'Freitag'},
-  {id:5,name:'Toompea Hügel',cat:'sightseeing',lat:59.4360,lng:24.7390,emoji:'⛪',desc:'Historische Oberstadt mit Schloss und Parlament. Die bekanntesten Panoramablicke über Tallinn mit roten Dächern.',day:'Freitag'},
-  {id:6,name:'Alexander-Newski-Kathedrale',cat:'sightseeing',lat:59.4363,lng:24.7393,emoji:'⛪',desc:'Eindrucksvolle orthodoxe Kathedrale mit russischem Einfluss direkt auf Toompea. Eines der markantesten Gebäude der Stadt.'},
-  {id:7,name:'Rathausplatz (Raekoja plats)',cat:'sightseeing',lat:59.4371,lng:24.7455,emoji:'🏛️',desc:'Historischer Mittelpunkt Tallinns mit Cafés, Märkten und ikonischer Atmosphäre. Town Hall Tower & Old Thomas.',day:'Freitag'},
-  {id:8,name:'Katharinenpassage',cat:'sightseeing',lat:59.4376,lng:24.7451,emoji:'🚪',desc:'Eine der fotogensten Gassen Tallinns mit Werkstätten, kleinen Boutiquen und mittelalterlichem Flair.',day:'Freitag'},
-  {id:9,name:'Telliskivi Creative City',cat:'sightseeing',lat:59.4399,lng:24.7267,emoji:'🏭',desc:'Kreativviertel voller Street Art, Designshops, Cafés, Bars und nordischem Industriecharme.',day:'Samstag'},
-  {id:10,name:'Noblessner Quarter',cat:'sightseeing',lat:59.4495,lng:24.7488,emoji:'⚓',desc:'Stylisches Hafenviertel mit Restaurants, Yachthafen, Design und entspanntem skandinavischem Flair.',day:'Samstag'},
-  {id:11,name:'KGB Museum & Hotel Viru',cat:'sightseeing',lat:59.4367,lng:24.7507,emoji:'🕵️',desc:'Spannender Einblick in Sowjetzeit, Überwachung und die Geschichte Estlands im berühmten Hotel Viru.',day:'Samstag'},
-  {id:12,name:'Balti Jaam Markt',cat:'sightseeing',lat:59.4413,lng:24.7360,emoji:'🛍️',desc:'Moderner Markt mit frischen Produkten, Street Food, Designshops und entspannter Atmosphäre.',day:'Sonntag'},
-  {id:13,name:'Lennusadam / Seaplane Harbour',cat:'sightseeing',lat:59.4506,lng:24.7470,emoji:'✈️',desc:'Beeindruckendes Seefahrtsmuseum mit U-Boot, historischen Schiffen und interaktiven Ausstellungen.',day:'Samstag'},
-  {id:14,name:'Linnahall',cat:'sightseeing',lat:59.4497,lng:24.7403,emoji:'🏗️',desc:'Monumentale Sowjet-Brutalistarchitektur direkt am Hafen. Verlassen, faszinierend, fotografisch unglaublich.'},
-  {id:15,name:'Meeresfestung Patarei',cat:'sightseeing',lat:59.4508,lng:24.7435,emoji:'🏰',desc:'Historische Meeresfestung aus dem 19. Jahrhundert. Heute Kulturzentrum mit interessanter Geschichte.'},
-  {id:16,name:'Kalamaja Holzviertel',cat:'sightseeing',lat:59.4423,lng:24.7299,emoji:'🪵',desc:'Charmantes Viertel mit bunten Holzhäusern, kaum Touristen. Authentisches Tallinn abseits der Altstadt.'},
-  {id:17,name:'Kadriorg Park & Schloss',cat:'sightseeing',lat:59.4369,lng:24.7960,emoji:'🌸',desc:'Wunderschöner Park mit barockem Schloss, Kunstmuseum und ruhigen Wegen zum Entspannen.',day:'Sonntag'},
-  {id:18,name:'Kiek in de Kök',cat:'sightseeing',lat:59.4360,lng:24.7406,emoji:'🏰',desc:'Historisches Festungsmuseum in einem mittelalterlichen Verteidigungsturm. Einzigartige Ausstellung über Tallinn.'},
-  {id:19,name:'Lehmpforte (Lühike jalg)',cat:'sightseeing',lat:59.4365,lng:24.7403,emoji:'🚪',desc:'Historische Lehmstraße und Torpassage zwischen Ober- und Unterstadt. Wunderschön und fotogen.'},
-  {id:20,name:'Suur Tõll (Eisbrecher)',cat:'sightseeing',lat:59.4511,lng:24.7476,emoji:'🚢',desc:'Historischer Eisbrecher aus dem frühen 20. Jh., heute Museumsschiff am Lennusadam.'},
-  // VIEWPOINTS
-  {id:21,name:'Patkuli Aussichtsplattform',cat:'viewpoint',lat:59.4382,lng:24.7376,emoji:'🔭',desc:'Der wohl schönste Blick über die Altstadt — besonders früh morgens, wenn die Stadt noch ganz für sich ist.',day:'Freitag'},
-  {id:22,name:'Piiskopi Aussichtsplattform',cat:'viewpoint',lat:59.4378,lng:24.7431,emoji:'🔭',desc:'Weiterer toller Aussichtspunkt über die Altstadt, etwas weniger bekannt als Patkuli.'},
-  {id:23,name:'Fotografiska Rooftop',cat:'viewpoint',lat:59.4415,lng:24.7584,emoji:'🔭',desc:'Viele gehen nur ins Museum — die Rooftop-Bar ist der eigentliche Geheimtipp. Perfekter Ausblick, entspannte Atmosphäre.',day:'Samstag'},
-  {id:24,name:'Kruiisiterminali Katusepromenad',cat:'viewpoint',lat:59.4527,lng:24.7396,emoji:'🔭',desc:'Dachpromenade des Kreuzfahrtterminals. Toller Blick auf den Hafen und die Altstadt.'},
-  {id:25,name:'Kohtuotsa Viewpoint',cat:'viewpoint',lat:59.4369,lng:24.7388,emoji:'🔭',desc:'Klassischer Toompea-Aussichtspunkt mit ikonischem Blick auf die roten Dächer der Altstadt.'},
-  {id:26,name:'Majaka Viewpoint',cat:'viewpoint',lat:59.4194,lng:24.7822,emoji:'🔭',desc:'Weniger bekannter Aussichtspunkt etwas außerhalb des Zentrums. Ruhig und besonders.'},
-  // RESTAURANTS
-  {id:27,name:'Rataskaevu 16',cat:'restaurant',lat:59.4377,lng:24.7447,emoji:'🍽️',desc:'Moderne estnische Küche mitten in der Altstadt. Ehrliche Zutaten, schönes Design, lange Abende.',day:'Freitag'},
-  {id:28,name:'F-Hoone',cat:'restaurant',lat:59.4397,lng:24.7264,emoji:'🍽️',desc:'Legendäres Restaurant in einer ehemaligen Industriehalle in Telliskivi. Mittagessen am Samstag perfekt.',day:'Samstag'},
-  {id:29,name:'NOA Restaurant',cat:'restaurant',lat:59.4489,lng:24.7906,emoji:'🍽️',desc:'Dinner direkt am Wasser mit Blick auf die Altstadt. Gehobene Küche, nordischer Stil.',day:'Samstag'},
-  {id:30,name:'Lore Bistro',cat:'restaurant',lat:59.4484,lng:24.7492,emoji:'🍽️',desc:'In Noblessner — die ganze Umgebung fühlt sich wie ein kleines Stück Kopenhagen an. Nordisches Flair am Wasser.'},
-  {id:31,name:'Lee Brasserie',cat:'restaurant',lat:59.4374,lng:24.7452,emoji:'🍽️',desc:'Elegante Brasserie in der Altstadt. €€€ · Fine Dining-Niveau, besondere Abende.'},
-  {id:32,name:'Pegasus',cat:'restaurant',lat:59.4371,lng:24.7455,emoji:'🍽️',desc:'Klassiker in der Altstadt mit estnischer und europäischer Küche. Verlässlich gut.'},
-  {id:33,name:'Olde Hanse',cat:'restaurant',lat:59.4371,lng:24.7457,emoji:'🍽️',desc:'Mittelalterliches Restaurant in der Altstadt — touristisch, aber unterhaltsam und tatsächlich gut.'},
-  {id:34,name:'Austerium Oyster Bar',cat:'restaurant',lat:59.4376,lng:24.7480,emoji:'🦪',desc:'Austernbar & Wine mit 5★ Rating. Besonders und erinnerungswürdig. €30–70.',day:'Samstag'},
-  // CAFÉS
-  {id:35,name:'RØST Bakery',cat:'cafe',lat:59.4376,lng:24.7431,emoji:'☕',desc:'Nordische Bäckerei mit fantastischem Kaffee und Zimtschnecken. Erster Stopp nach dem Hotel.',day:'Freitag'},
-  {id:36,name:'Maiasmokk Café',cat:'cafe',lat:59.4375,lng:24.7457,emoji:'☕',desc:'Ältestes Café Tallinns (seit 1864). Marzipan und historische Atmosphäre. Muss man gesehen haben.'},
-  {id:37,name:'Pierre Chocolaterie',cat:'cafe',lat:59.4374,lng:24.7455,emoji:'🍫',desc:'Handgemachte Schokolade und Pralinés. Perfekt als Mitbringsel.'},
-  {id:38,name:'Fika',cat:'cafe',lat:59.4373,lng:24.7449,emoji:'☕',desc:'Skandinavisches Café-Konzept. Entspannt, modern, guter Kaffee.'},
-  {id:39,name:'Reval Cafe',cat:'cafe',lat:59.4374,lng:24.7454,emoji:'☕',desc:'Sonntagsbrunch-Tipp. Gemütlich, estnisch, entspannte Atmosphäre.'},
-  // BARS
-  {id:40,name:'Whisper Sister',cat:'bar',lat:59.4375,lng:24.7437,emoji:'🍸',desc:'Hinter einer unscheinbaren Tür: eine der atmosphärischsten Bars Tallinns. Kerzenlicht, Jazz, ehrliche Drinks.',day:'Freitag'},
-  {id:41,name:'Botaanik',cat:'bar',lat:59.4376,lng:24.7444,emoji:'🌿',desc:'Botanical Bar — Pflanzen, Aromen, nordische Eleganz. Natur trifft Mixology. Signature: Herbal Gin Fizz.'},
-  {id:42,name:'Sigmund Freud Bar',cat:'bar',lat:59.4374,lng:24.7458,emoji:'🧠',desc:'Verspielt, exzentrisch, voller Charakter. Cocktails mit Geschichte und einem Hauch Ironie.',day:'Freitag'},
-  {id:43,name:'Põhjala Tap Room',cat:'bar',lat:59.4400,lng:24.7268,emoji:'🍺',desc:'Industrial Chic in Telliskivi. Großartiges Craft Beer, lässige Stimmung, oft Live-Musik.',day:'Samstag'},
-  {id:44,name:'Koht',cat:'bar',lat:59.4375,lng:24.7461,emoji:'🍺',desc:'Klein, herzlich, voller Locals. Beste Auswahl estnischer Craft Biere. Ein echtes Tallinn.'},
-  {id:45,name:'Möku',cat:'bar',lat:59.4395,lng:24.7265,emoji:'🍸',desc:'Bar in Telliskivi. €1–10. Entspannt, lokal, authentisch.'},
-  // KULTUR
-  {id:46,name:'Fotografiska Tallinn',cat:'kultur',lat:59.4415,lng:24.7584,emoji:'📸',desc:'Modernes Fotografie-Museum mit wechselnden Ausstellungen. Rooftop-Bar mit Blick über die Stadt.',day:'Samstag'},
-  {id:47,name:'Kumu Art Museum',cat:'kultur',lat:59.4373,lng:24.8011,emoji:'🎨',desc:'Größtes Kunstmuseum der baltischen Staaten, direkt neben Kadriorg. Weltklasse-Niveau, überraschend wenig bekannt.',day:'Sonntag'},
-  // STREET ART
-  {id:48,name:'Street Art "Koit ja Hämarik"',cat:'streetart',lat:59.4448,lng:24.7297,emoji:'🎨',desc:'Bekanntes Mural in Kalamaja — Gesichter die einander anblicken. Eines der ikonischsten Street-Art-Werke Tallinns.'},
-  {id:49,name:'Street Art "Naine"',cat:'streetart',lat:59.4444,lng:24.7302,emoji:'🎨',desc:'Eindrucksvolles Frauenporträt als Wandbild. 5★ Rating.'},
-  {id:50,name:'Street Art "Mundra"',cat:'streetart',lat:59.4445,lng:24.7305,emoji:'🎨',desc:'Weiteres beeindruckendes Mural in der Kalamaja-Gegend.'},
-  {id:51,name:'Street Art Axolot',cat:'streetart',lat:59.4441,lng:24.7309,emoji:'🎨',desc:'Street Art mit Axolot und blauem Hirsch — farbenfroh und kurios.'},
-  {id:52,name:'Street Art Tondi',cat:'streetart',lat:59.4068,lng:24.7201,emoji:'🎨',desc:'Etwas außerhalb: Street Art Viertel Tondi. Für Street-Art-Enthusiasten eine Reise wert.'},
-  // PARKS
-  {id:53,name:'Dompark',cat:'park',lat:59.4371,lng:24.7397,emoji:'🌿',desc:'Grüne Oase direkt auf Toompea. Ruhige Spazierwege zwischen historischen Gebäuden.'},
-  {id:54,name:'Hirschpark',cat:'park',lat:59.4441,lng:24.7895,emoji:'🦌',desc:'Park nahe Kadriorg — ruhig, weitläufig, schöne Wege.'},
-  {id:55,name:'Tallinn Old Town Park',cat:'park',lat:59.4389,lng:24.7400,emoji:'🌿',desc:'Kleiner Park am Rand der Altstadt. Paks Margarita — entspannte Atmosphäre.'},
+// Italian flag colors palette
+var GREEN="#009246",GS="#00924615",GM="#00924640",RED="#CE2B37",RS="#CE2B3715";
+var BLK="#111111",GR="#6B6B6B",LT="#AAAAAA";
+var BG="#F5F7F5",WH="#FFFFFF",BR="#EBEBEB",GRN="#34C759",ERR="#FF3B30";
+var SH="0 2px 16px rgba(0,0,0,0.06)",SSH="0 1px 4px rgba(0,0,0,0.04)",SGH="0 2px 10px rgba(0,146,70,0.25)";
+var SERIF='Georgia,"Palatino Linotype",Palatino,"Times New Roman",serif';
+
+function lsGet(k,fb){try{var v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch(e){return fb;}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function loadProgress(){return lsGet("it_prog",{});}
+function saveProgress(kn,le,counts){
+  var ka=[],la=[];kn.forEach(function(v){ka.push(v);});le.forEach(function(v){la.push(v);});
+  lsSet("it_prog",{known:ka,learning:la,counts:counts||{}});
+}
+function loadStats(){return lsGet("it_stats",{});}
+function saveStats(s){lsSet("it_stats",s);}
+function loadPlan(){return lsGet("it_plan",{dailyGoal:10});}
+function savePlan(p){lsSet("it_plan",p);}
+function todayKey(){return new Date().toISOString().slice(0,10);}
+function recordActivity(it,correct){
+  var s=loadStats(),k=todayKey();
+  if(!s[k])s[k]={seen:0,correct:0,words:[]};
+  s[k].seen++;if(correct)s[k].correct++;
+  if(s[k].words.indexOf(it)===-1)s[k].words.push(it);
+  var keys=Object.keys(s).sort();
+  if(keys.length>30)keys.slice(0,keys.length-30).forEach(function(k2){delete s[k2];});
+  saveStats(s);
+}
+function getTodayWords(){var s=loadStats(),k=todayKey();return s[k]?s[k].words||[]:[]; }
+function objSum(o,key){var t=0;Object.keys(o).forEach(function(k){t+=o[k][key]||0;});return t;}
+function shuffle(arr){var a=arr.slice(),i=a.length,j,t;while(i--){j=Math.floor(Math.random()*(i+1));t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function setArr(s){var a=[];s.forEach(function(v){a.push(v);});return a;}
+function cs(){var o={};for(var i=0;i<arguments.length;i++){var a=arguments[i];if(a)Object.keys(a).forEach(function(k){o[k]=a[k];});}return o;}
+
+// Italian pronunciation tips
+var PRONUC_MAP={
+  "ci":"tschi","ce":"tsche","chi":"ki","che":"ke",
+  "gi":"dschi","ge":"dsche","ghi":"gi","ghe":"ge",
+  "sc":"sch","gli":"lji","gn":"nj","zz":"tz/ds",
+  "qu":"kw","uo":"uo","ie":"je"
+};
+function getPronTips(word){
+  var tips=[],low=word.toLowerCase();
+  var checks=[["ci","tschi"],["chi","ki"],["gi","dschi"],["ghi","gi"],["sc","sch"],["gli","lji"],["gn","nj"],["zz","tz"],["qu","kw"]];
+  for(var i=0;i<checks.length;i++){
+    if(low.indexOf(checks[i][0])!==-1){tips.push(checks[i][0]+"="+checks[i][1]);if(tips.length>=2)break;}
+  }
+  return tips;
+}
+
+const VOCAB = [
+  // ── Begrüßung & Höflichkeit (40) ──
+  { it: "Ciao", de: "Hallo / Tschüss", cat: "Grundlagen", ex: "Ciao, come stai?" },
+  { it: "Buongiorno", de: "Guten Morgen / Tag", cat: "Grundlagen", ex: "Buongiorno, signore!" },
+  { it: "Buon pomeriggio", de: "Guten Nachmittag", cat: "Grundlagen", ex: "Buon pomeriggio a tutti." },
+  { it: "Buonasera", de: "Guten Abend", cat: "Grundlagen", ex: "Buonasera, benvenuti!" },
+  { it: "Buonanotte", de: "Gute Nacht", cat: "Grundlagen", ex: "Buonanotte, sogni d'oro." },
+  { it: "Arrivederci", de: "Auf Wiedersehen", cat: "Grundlagen", ex: "Arrivederci, a presto!" },
+  { it: "A presto", de: "Bis bald", cat: "Grundlagen", ex: "A presto, amico mio." },
+  { it: "Grazie", de: "Danke", cat: "Grundlagen", ex: "Grazie mille!" },
+  { it: "Grazie mille", de: "Vielen herzlichen Dank", cat: "Grundlagen", ex: "Grazie mille per l'aiuto." },
+  { it: "Prego", de: "Bitte / Gern geschehen", cat: "Grundlagen", ex: "Prego, si accomodi." },
+  { it: "Scusi", de: "Entschuldigung (formal)", cat: "Grundlagen", ex: "Scusi, dov'è il bagno?" },
+  { it: "Scusa", de: "Entschuldigung (informal)", cat: "Grundlagen", ex: "Scusa, puoi ripetere?" },
+  { it: "Mi dispiace", de: "Es tut mir leid", cat: "Grundlagen", ex: "Mi dispiace per il ritardo." },
+  { it: "Sì", de: "Ja", cat: "Grundlagen", ex: "Sì, capisco." },
+  { it: "No", de: "Nein", cat: "Grundlagen", ex: "No, grazie." },
+  { it: "Forse", de: "Vielleicht", cat: "Grundlagen", ex: "Forse vengo domani." },
+  { it: "Certo", de: "Natürlich / Sicher", cat: "Grundlagen", ex: "Certo, con piacere." },
+  { it: "Eccolo / Eccola", de: "Hier bitte / Da ist es", cat: "Grundlagen", ex: "Eccola, la sua chiave." },
+  { it: "Come stai?", de: "Wie geht es dir?", cat: "Grundlagen", ex: "Ciao, come stai?" },
+  { it: "Bene, grazie", de: "Gut, danke", cat: "Grundlagen", ex: "Bene, grazie, e tu?" },
+  { it: "Benissimo", de: "Ausgezeichnet / Sehr gut", cat: "Grundlagen", ex: "Mi sento benissimo." },
+  { it: "Non molto bene", de: "Nicht so gut", cat: "Grundlagen", ex: "Oggi non mi sento bene." },
+  { it: "Benvenuto", de: "Willkommen", cat: "Grundlagen", ex: "Benvenuto a Roma!" },
+  { it: "Salute", de: "Gesundheit / Prost", cat: "Grundlagen", ex: "Salute! — Grazie." },
+  { it: "Buon viaggio", de: "Gute Reise", cat: "Grundlagen", ex: "Buon viaggio e torna presto." },
+  { it: "In bocca al lupo", de: "Viel Glück", cat: "Grundlagen", ex: "In bocca al lupo per l'esame!" },
+  { it: "Auguri", de: "Alles Gute / Herzlichen Glückwunsch", cat: "Grundlagen", ex: "Tanti auguri di buon compleanno!" },
+  { it: "Piacere", de: "Freut mich", cat: "Grundlagen", ex: "Piacere, sono Marco." },
+  { it: "Come ti chiami?", de: "Wie heißt du?", cat: "Grundlagen", ex: "Ciao, come ti chiami?" },
+  { it: "Mi chiamo...", de: "Ich heiße...", cat: "Grundlagen", ex: "Mi chiamo Luca." },
+  { it: "Di dove sei?", de: "Woher bist du?", cat: "Grundlagen", ex: "Di dove sei? Sono di Vienna." },
+  { it: "Quanti anni hai?", de: "Wie alt bist du?", cat: "Grundlagen", ex: "Quanti anni hai? Ho 30 anni." },
+  { it: "Parli italiano?", de: "Sprichst du Italienisch?", cat: "Grundlagen", ex: "Parli italiano? Un po'." },
+  { it: "Non capisco", de: "Ich verstehe nicht", cat: "Grundlagen", ex: "Scusa, non capisco." },
+  { it: "Può ripetere?", de: "Können Sie das wiederholen?", cat: "Grundlagen", ex: "Può ripetere più lentamente?" },
+  { it: "Parla tedesco?", de: "Sprechen Sie Deutsch?", cat: "Grundlagen", ex: "Parla tedesco? Sì, un po'." },
+  { it: "Piano, per favore", de: "Langsam, bitte", cat: "Grundlagen", ex: "Parli piano, per favore." },
+  { it: "Capisco", de: "Ich verstehe", cat: "Grundlagen", ex: "Sì, ora capisco." },
+  { it: "Ho dimenticato", de: "Ich habe vergessen", cat: "Grundlagen", ex: "Ho dimenticato la parola." },
+  { it: "Non so", de: "Ich weiß nicht", cat: "Grundlagen", ex: "Non so dov'è la stazione." },
+
+  // ── Familie & Menschen (40) ──
+  { it: "La famiglia", de: "Familie", cat: "Grundlagen", ex: "Ho una grande famiglia." },
+  { it: "La mamma", de: "Mama / Mutter", cat: "Grundlagen", ex: "Mia mamma è insegnante." },
+  { it: "Il papà", de: "Papa / Vater", cat: "Grundlagen", ex: "Mio papà lavora a Roma." },
+  { it: "Il figlio", de: "Sohn", cat: "Grundlagen", ex: "Mio figlio ha cinque anni." },
+  { it: "La figlia", de: "Tochter", cat: "Grundlagen", ex: "Nostra figlia va a scuola." },
+  { it: "Il fratello", de: "Bruder", cat: "Grundlagen", ex: "Mio fratello vive a Milano." },
+  { it: "La sorella", de: "Schwester", cat: "Grundlagen", ex: "Ho una sorella." },
+  { it: "Il nonno", de: "Großvater / Opa", cat: "Grundlagen", ex: "Il nonno racconta storie." },
+  { it: "La nonna", de: "Großmutter / Oma", cat: "Grundlagen", ex: "La nonna cucina benissimo." },
+  { it: "Lo zio", de: "Onkel", cat: "Grundlagen", ex: "Lo zio viene nel weekend." },
+  { it: "La zia", de: "Tante", cat: "Grundlagen", ex: "La zia Marta è allegra." },
+  { it: "Il cugino", de: "Cousin (männlich)", cat: "Grundlagen", ex: "Mio cugino è medico." },
+  { it: "La cugina", de: "Cousine (weiblich)", cat: "Grundlagen", ex: "La cugina vive all'estero." },
+  { it: "Il marito", de: "Ehemann", cat: "Grundlagen", ex: "Mio marito cucina benissimo." },
+  { it: "La moglie", de: "Ehefrau", cat: "Grundlagen", ex: "Mia moglie lavora in ospedale." },
+  { it: "L'amico", de: "Freund (m)", cat: "Grundlagen", ex: "Il mio amico è divertente." },
+  { it: "L'amica", de: "Freundin (f)", cat: "Grundlagen", ex: "La mia amica abita vicino." },
+  { it: "Il vicino", de: "Nachbar (m)", cat: "Grundlagen", ex: "Il vicino è molto gentile." },
+  { it: "La vicina", de: "Nachbarin (f)", cat: "Grundlagen", ex: "La vicina ci ha aiutato." },
+  { it: "Il collega", de: "Kollege", cat: "Grundlagen", ex: "Il mio collega è polacco." },
+  { it: "Il capo", de: "Chef / Boss", cat: "Grundlagen", ex: "Il capo è arrivato tardi." },
+  { it: "Il bambino", de: "Kind (m)", cat: "Grundlagen", ex: "Questo bambino è carino." },
+  { it: "Il ragazzo", de: "Junge / Bub", cat: "Grundlagen", ex: "Quel ragazzo gioca a calcio." },
+  { it: "La ragazza", de: "Mädchen", cat: "Grundlagen", ex: "La ragazza canta bene." },
+  { it: "L'uomo", de: "Mann", cat: "Grundlagen", ex: "Quell'uomo è alto." },
+  { it: "La donna", de: "Frau", cat: "Grundlagen", ex: "Questa donna è medica." },
+  { it: "Vecchio / Vecchia", de: "Alt", cat: "Grundlagen", ex: "Il mio nonno è vecchio ma in salute." },
+  { it: "Giovane", de: "Jung", cat: "Grundlagen", ex: "È ancora giovane." },
+  { it: "La suocera", de: "Schwiegermutter", cat: "Grundlagen", ex: "La suocera ci visita sabato." },
+  { it: "Il suocero", de: "Schwiegervater", cat: "Grundlagen", ex: "Il suocero legge volentieri." },
+  { it: "Il genero", de: "Schwiegersohn", cat: "Grundlagen", ex: "Il genero lavora a Vienna." },
+  { it: "La nuora", de: "Schwiegertochter / Braut", cat: "Grundlagen", ex: "La nuora è molto gentile." },
+  { it: "I gemelli", de: "Zwillinge", cat: "Grundlagen", ex: "Hanno dei gemelli." },
+  { it: "Il figlio unico", de: "Einzelkind", cat: "Grundlagen", ex: "Sono figlio unico." },
+  { it: "Divorziato", de: "Geschieden", cat: "Grundlagen", ex: "È divorziato." },
+  { it: "Single / Celibe", de: "Ledig", cat: "Grundlagen", ex: "Sono single." },
+  { it: "Sposato / Sposata", de: "Verheiratet", cat: "Grundlagen", ex: "Siamo sposati da cinque anni." },
+  { it: "Gentile", de: "Nett / Liebenswürdig", cat: "Grundlagen", ex: "È una persona molto gentile." },
+  { it: "Simpatico", de: "Sympathisch", cat: "Grundlagen", ex: "La mia collega è simpatica." },
+  { it: "Adottato", de: "Adoptiert", cat: "Grundlagen", ex: "È adottato." },
+
+  // ── Zahlen, Zeit & Datum (40) ──
+  { it: "Uno", de: "Eins (1)", cat: "Zahlen & Zeit", ex: "Ho un fratello." },
+  { it: "Due", de: "Zwei (2)", cat: "Zahlen & Zeit", ex: "Due caffè, per favore." },
+  { it: "Tre", de: "Drei (3)", cat: "Zahlen & Zeit", ex: "Tre giorni." },
+  { it: "Quattro", de: "Vier (4)", cat: "Zahlen & Zeit", ex: "Quattro ore." },
+  { it: "Cinque", de: "Fünf (5)", cat: "Zahlen & Zeit", ex: "Cinque minuti." },
+  { it: "Sei", de: "Sechs (6)", cat: "Zahlen & Zeit", ex: "Alle sei." },
+  { it: "Sette", de: "Sieben (7)", cat: "Zahlen & Zeit", ex: "Sette giorni alla settimana." },
+  { it: "Otto", de: "Acht (8)", cat: "Zahlen & Zeit", ex: "Otto euro." },
+  { it: "Nove", de: "Neun (9)", cat: "Zahlen & Zeit", ex: "Le nove di mattina." },
+  { it: "Dieci", de: "Zehn (10)", cat: "Zahlen & Zeit", ex: "Dieci minuti." },
+  { it: "Venti", de: "Zwanzig (20)", cat: "Zahlen & Zeit", ex: "Venti anni." },
+  { it: "Cinquanta", de: "Fünfzig (50)", cat: "Zahlen & Zeit", ex: "Cinquanta centesimi." },
+  { it: "Cento", de: "Hundert (100)", cat: "Zahlen & Zeit", ex: "Cento euro." },
+  { it: "Mille", de: "Tausend (1000)", cat: "Zahlen & Zeit", ex: "Mille chilometri." },
+  { it: "Primo", de: "Erste/r/s", cat: "Zahlen & Zeit", ex: "Il primo gennaio." },
+  { it: "Secondo", de: "Zweite/r/s", cat: "Zahlen & Zeit", ex: "Il secondo piano." },
+  { it: "Oggi", de: "Heute", cat: "Zahlen & Zeit", ex: "Oggi è lunedì." },
+  { it: "Domani", de: "Morgen", cat: "Zahlen & Zeit", ex: "Domani vengo." },
+  { it: "Ieri", de: "Gestern", cat: "Zahlen & Zeit", ex: "Ieri ero malato." },
+  { it: "Adesso / Ora", de: "Jetzt / Gerade", cat: "Zahlen & Zeit", ex: "Adesso vado a casa." },
+  { it: "Dopo", de: "Später / Danach", cat: "Zahlen & Zeit", ex: "Chiamo dopo." },
+  { it: "Prima", de: "Früher / Vorher", cat: "Zahlen & Zeit", ex: "Vieni prima." },
+  { it: "La mattina", de: "Morgen (Tageszeit)", cat: "Zahlen & Zeit", ex: "La mattina bevo il caffè." },
+  { it: "Il mezzogiorno", de: "Mittag", cat: "Zahlen & Zeit", ex: "A mezzogiorno andiamo a mangiare." },
+  { it: "La sera", de: "Abend", cat: "Zahlen & Zeit", ex: "La sera guardiamo un film." },
+  { it: "La notte", de: "Nacht", cat: "Zahlen & Zeit", ex: "Di notte è silenzioso." },
+  { it: "L'ora", de: "Stunde / Uhr", cat: "Zahlen & Zeit", ex: "Che ore sono?" },
+  { it: "Il minuto", de: "Minute", cat: "Zahlen & Zeit", ex: "Cinque minuti." },
+  { it: "Il giorno", de: "Tag", cat: "Zahlen & Zeit", ex: "Ogni giorno." },
+  { it: "La settimana", de: "Woche", cat: "Zahlen & Zeit", ex: "Questa settimana." },
+  { it: "Il mese", de: "Monat", cat: "Zahlen & Zeit", ex: "Il mese prossimo." },
+  { it: "L'anno", de: "Jahr", cat: "Zahlen & Zeit", ex: "Quest'anno." },
+  { it: "Lunedì", de: "Montag", cat: "Zahlen & Zeit", ex: "Lunedì ho una riunione." },
+  { it: "Mercoledì", de: "Mittwoch", cat: "Zahlen & Zeit", ex: "Mercoledì vengo." },
+  { it: "Venerdì", de: "Freitag", cat: "Zahlen & Zeit", ex: "Venerdì usciamo." },
+  { it: "Sabato", de: "Samstag", cat: "Zahlen & Zeit", ex: "Sabato mi riposo." },
+  { it: "Domenica", de: "Sonntag", cat: "Zahlen & Zeit", ex: "Domenica siamo a casa." },
+  { it: "Gennaio", de: "Jänner / Januar", cat: "Zahlen & Zeit", ex: "A gennaio fa freddo." },
+  { it: "Luglio", de: "Juli", cat: "Zahlen & Zeit", ex: "A luglio andiamo in vacanza." },
+  { it: "Dicembre", de: "Dezember", cat: "Zahlen & Zeit", ex: "A dicembre è Natale." },
+
+  // ── Essen & Restaurant (40) ──
+  { it: "Il cibo", de: "Essen / Speise", cat: "Essen & Reisen", ex: "Il cibo italiano è buonissimo." },
+  { it: "L'acqua", de: "Wasser", cat: "Essen & Reisen", ex: "Un'acqua, per favore." },
+  { it: "Il caffè", de: "Kaffee", cat: "Essen & Reisen", ex: "Un caffè, per favore." },
+  { it: "Il tè", de: "Tee", cat: "Essen & Reisen", ex: "Voglio un tè al limone." },
+  { it: "La birra", de: "Bier", cat: "Essen & Reisen", ex: "Due birre, per favore." },
+  { it: "Il vino", de: "Wein", cat: "Essen & Reisen", ex: "Rosso o bianco?" },
+  { it: "Il succo", de: "Saft", cat: "Essen & Reisen", ex: "Un succo d'arancia." },
+  { it: "Il pane", de: "Brot", cat: "Essen & Reisen", ex: "Ho comprato il pane." },
+  { it: "La carne", de: "Fleisch", cat: "Essen & Reisen", ex: "Non mangio carne." },
+  { it: "Il pollo", de: "Hühnchen", cat: "Essen & Reisen", ex: "Pollo con patate." },
+  { it: "Il pesce", de: "Fisch", cat: "Essen & Reisen", ex: "Oggi mangio il pesce." },
+  { it: "La minestra", de: "Suppe", cat: "Essen & Reisen", ex: "Un piatto di minestra." },
+  { it: "L'insalata", de: "Salat", cat: "Essen & Reisen", ex: "Un'insalata mista." },
+  { it: "La pasta", de: "Nudeln / Pasta", cat: "Essen & Reisen", ex: "Adoro la pasta." },
+  { it: "Il riso", de: "Reis", cat: "Essen & Reisen", ex: "Risotto ai funghi." },
+  { it: "Le patate", de: "Kartoffeln", cat: "Essen & Reisen", ex: "Patate al forno." },
+  { it: "La verdura", de: "Gemüse", cat: "Essen & Reisen", ex: "Verdura fresca." },
+  { it: "La frutta", de: "Obst", cat: "Essen & Reisen", ex: "Frutta fresca di stagione." },
+  { it: "La mela", de: "Apfel", cat: "Essen & Reisen", ex: "Una mela al giorno." },
+  { it: "La banana", de: "Banane", cat: "Essen & Reisen", ex: "La banana fa bene." },
+  { it: "Il formaggio", de: "Käse", cat: "Essen & Reisen", ex: "Panino con il formaggio." },
+  { it: "L'uovo", de: "Ei", cat: "Essen & Reisen", ex: "Un uovo sodo." },
+  { it: "Il burro", de: "Butter", cat: "Essen & Reisen", ex: "Pane con il burro." },
+  { it: "Il sale", de: "Salz", cat: "Essen & Reisen", ex: "Passami il sale, per favore." },
+  { it: "Lo zucchero", de: "Zucker", cat: "Essen & Reisen", ex: "Caffè senza zucchero." },
+  { it: "Il menù", de: "Speisekarte", cat: "Essen & Reisen", ex: "Posso vedere il menù?" },
+  { it: "Il cameriere", de: "Kellner", cat: "Essen & Reisen", ex: "Cameriere, per favore!" },
+  { it: "Il conto", de: "Rechnung", cat: "Essen & Reisen", ex: "Posso avere il conto?" },
+  { it: "La prenotazione", de: "Reservierung", cat: "Essen & Reisen", ex: "Ho una prenotazione per le otto." },
+  { it: "Il tavolo", de: "Tisch", cat: "Essen & Reisen", ex: "Un tavolo per due, per favore." },
+  { it: "Il vegetariano", de: "Vegetarier/in", cat: "Essen & Reisen", ex: "Sono vegetariano." },
+  { it: "Allergico a", de: "Allergisch auf", cat: "Essen & Reisen", ex: "Sono allergico alle noci." },
+  { it: "Buono / Delizioso", de: "Lecker / Köstlich", cat: "Essen & Reisen", ex: "Questo piatto è delizioso!" },
+  { it: "Caldo", de: "Heiß / Warm", cat: "Essen & Reisen", ex: "È troppo caldo." },
+  { it: "Freddo", de: "Kalt", cat: "Essen & Reisen", ex: "La minestra è fredda." },
+  { it: "Il dessert", de: "Dessert / Nachtisch", cat: "Essen & Reisen", ex: "Prendete il dessert?" },
+  { it: "La torta", de: "Torte / Kuchen", cat: "Essen & Reisen", ex: "Torta al cioccolato." },
+  { it: "Il gelato", de: "Eis / Speiseeis", cat: "Essen & Reisen", ex: "Due palline di gelato." },
+  { it: "Il bicchiere", de: "Glas", cat: "Essen & Reisen", ex: "Un bicchiere d'acqua." },
+  { it: "La bottiglia", de: "Flasche", cat: "Essen & Reisen", ex: "Una bottiglia di vino." },
+
+  // ── Wohnen & Alltag (40) ──
+  { it: "La casa", de: "Haus", cat: "Alltag & Einkaufen", ex: "La mia casa è grande." },
+  { it: "L'appartamento", de: "Wohnung", cat: "Alltag & Einkaufen", ex: "Cerco un appartamento in centro." },
+  { it: "La stanza", de: "Zimmer", cat: "Alltag & Einkaufen", ex: "Ho due stanze." },
+  { it: "La cucina", de: "Küche", cat: "Alltag & Einkaufen", ex: "Cucino in cucina." },
+  { it: "Il bagno", de: "Badezimmer / Bad", cat: "Alltag & Einkaufen", ex: "Il bagno è a destra." },
+  { it: "Il gabinetto / WC", de: "Toilette / WC", cat: "Alltag & Einkaufen", ex: "Dov'è il bagno?" },
+  { it: "La camera da letto", de: "Schlafzimmer", cat: "Alltag & Einkaufen", ex: "La camera da letto è silenziosa." },
+  { it: "Il salotto", de: "Wohnzimmer", cat: "Alltag & Einkaufen", ex: "Siamo seduti in salotto." },
+  { it: "Il balcone", de: "Balkon", cat: "Alltag & Einkaufen", ex: "Abbiamo un bel balcone." },
+  { it: "Il giardino", de: "Garten", cat: "Alltag & Einkaufen", ex: "Il giardino è pieno di fiori." },
+  { it: "La porta", de: "Tür", cat: "Alltag & Einkaufen", ex: "Chiudi la porta, per favore." },
+  { it: "La finestra", de: "Fenster", cat: "Alltag & Einkaufen", ex: "Apri la finestra." },
+  { it: "La chiave", de: "Schlüssel", cat: "Alltag & Einkaufen", ex: "Ho dimenticato la chiave." },
+  { it: "L'affitto", de: "Miete", cat: "Alltag & Einkaufen", ex: "Quanto è l'affitto?" },
+  { it: "Il piano", de: "Stockwerk / Etage", cat: "Alltag & Einkaufen", ex: "Abito al terzo piano." },
+  { it: "L'ascensore", de: "Aufzug / Lift", cat: "Alltag & Einkaufen", ex: "L'ascensore non funziona." },
+  { it: "Le scale", de: "Treppe / Stufen", cat: "Alltag & Einkaufen", ex: "Salgo le scale." },
+  { it: "I vicini", de: "Nachbarn", cat: "Alltag & Einkaufen", ex: "I vicini sono rumorosi." },
+  { it: "Il letto", de: "Bett", cat: "Alltag & Einkaufen", ex: "Vado a letto." },
+  { it: "La sedia", de: "Stuhl", cat: "Alltag & Einkaufen", ex: "Siediti sulla sedia." },
+  { it: "Il tavolo", de: "Tisch", cat: "Alltag & Einkaufen", ex: "Il tavolo è vicino alla finestra." },
+  { it: "L'armadio", de: "Schrank", cat: "Alltag & Einkaufen", ex: "I vestiti sono nell'armadio." },
+  { it: "La lampada", de: "Lampe", cat: "Alltag & Einkaufen", ex: "Accendi la lampada." },
+  { it: "La lavatrice", de: "Waschmaschine", cat: "Alltag & Einkaufen", ex: "La lavatrice è piena." },
+  { it: "Il frigorifero", de: "Kühlschrank", cat: "Alltag & Einkaufen", ex: "Metti il latte nel frigo." },
+  { it: "I fornelli", de: "Herd", cat: "Alltag & Einkaufen", ex: "Cucino sui fornelli." },
+  { it: "La televisione", de: "Fernseher", cat: "Alltag & Einkaufen", ex: "Guardiamo la televisione." },
+  { it: "Il computer", de: "Computer", cat: "Alltag & Einkaufen", ex: "Lavoro al computer." },
+  { it: "Il cellulare", de: "Handy / Mobiltelefon", cat: "Alltag & Einkaufen", ex: "Dov'è il mio cellulare?" },
+  { it: "Il caricatore", de: "Ladekabel / Ladegerät", cat: "Alltag & Einkaufen", ex: "Ho bisogno del caricatore." },
+  { it: "La spazzatura", de: "Müll / Abfall", cat: "Alltag & Einkaufen", ex: "Porta fuori la spazzatura." },
+  { it: "Le pulizie", de: "Putzen / Aufräumen", cat: "Alltag & Einkaufen", ex: "Sabato faccio le pulizie." },
+  { it: "Lavare i piatti", de: "Geschirrspülen", cat: "Alltag & Einkaufen", ex: "Lavo i piatti." },
+  { it: "La spesa", de: "Einkauf", cat: "Alltag & Einkaufen", ex: "Vado a fare la spesa." },
+  { it: "Il lavoro", de: "Arbeit", cat: "Alltag & Einkaufen", ex: "Vado al lavoro." },
+  { it: "La scuola", de: "Schule", cat: "Alltag & Einkaufen", ex: "I bambini vanno a scuola." },
+  { it: "L'ospedale", de: "Krankenhaus", cat: "Alltag & Einkaufen", ex: "Vado all'ospedale." },
+  { it: "La farmacia", de: "Apotheke", cat: "Alltag & Einkaufen", ex: "Dov'è la farmacia?" },
+  { it: "L'ufficio postale", de: "Postamt", cat: "Alltag & Einkaufen", ex: "Vado all'ufficio postale." },
+  { it: "La banca", de: "Bank", cat: "Alltag & Einkaufen", ex: "Dov'è la banca più vicina?" },
+
+  // ── Reisen & Transport (40) ──
+  { it: "Il treno", de: "Zug", cat: "Essen & Reisen", ex: "Il treno è in ritardo." },
+  { it: "L'autobus", de: "Bus", cat: "Essen & Reisen", ex: "L'autobus numero cinque." },
+  { it: "L'auto", de: "Auto", cat: "Essen & Reisen", ex: "Ho una macchina nuova." },
+  { it: "Il taxi", de: "Taxi", cat: "Essen & Reisen", ex: "Mi chiami un taxi." },
+  { it: "L'aereo", de: "Flugzeug", cat: "Essen & Reisen", ex: "L'aereo parte alle otto." },
+  { it: "La nave", de: "Schiff / Boot", cat: "Essen & Reisen", ex: "Viaggiamo in nave." },
+  { it: "La bicicletta", de: "Fahrrad", cat: "Essen & Reisen", ex: "Vado in bicicletta." },
+  { it: "La stazione", de: "Bahnhof", cat: "Essen & Reisen", ex: "Dov'è la stazione?" },
+  { it: "L'aeroporto", de: "Flughafen", cat: "Essen & Reisen", ex: "L'aeroporto è lontano." },
+  { it: "La fermata", de: "Haltestelle", cat: "Essen & Reisen", ex: "Dov'è la fermata più vicina?" },
+  { it: "Il biglietto", de: "Ticket / Fahrkarte", cat: "Essen & Reisen", ex: "Un biglietto per Roma." },
+  { it: "Il passaporto", de: "Reisepass", cat: "Essen & Reisen", ex: "Ho bisogno del passaporto." },
+  { it: "Il visto", de: "Visum", cat: "Essen & Reisen", ex: "Ho bisogno del visto?" },
+  { it: "L'albergo", de: "Hotel", cat: "Essen & Reisen", ex: "Cerco un albergo." },
+  { it: "La camera", de: "Zimmer", cat: "Essen & Reisen", ex: "Una camera per due." },
+  { it: "La reception", de: "Rezeption", cat: "Essen & Reisen", ex: "Mi registro alla reception." },
+  { it: "La mappa", de: "Karte / Stadtplan", cat: "Essen & Reisen", ex: "Ha una mappa della città?" },
+  { it: "L'indirizzo", de: "Adresse", cat: "Essen & Reisen", ex: "Qual è il suo indirizzo?" },
+  { it: "La strada", de: "Straße", cat: "Essen & Reisen", ex: "In quale strada?" },
+  { it: "La piazza", de: "Platz", cat: "Essen & Reisen", ex: "Piazza Navona." },
+  { it: "Il ponte", de: "Brücke", cat: "Essen & Reisen", ex: "Passa sul ponte." },
+  { it: "Il fiume", de: "Fluss", cat: "Essen & Reisen", ex: "Il Tevere è un grande fiume." },
+  { it: "A destra", de: "Rechts", cat: "Essen & Reisen", ex: "Giri a destra." },
+  { it: "A sinistra", de: "Links", cat: "Essen & Reisen", ex: "Giri a sinistra." },
+  { it: "Dritto / Sempre dritto", de: "Geradeaus", cat: "Essen & Reisen", ex: "Vada sempre dritto." },
+  { it: "Lontano", de: "Weit", cat: "Essen & Reisen", ex: "È lontano?" },
+  { it: "Vicino", de: "Nah / In der Nähe", cat: "Essen & Reisen", ex: "È vicino." },
+  { it: "La partenza", de: "Abfahrt / Abflug", cat: "Essen & Reisen", ex: "Quando parte il treno?" },
+  { it: "L'arrivo", de: "Ankunft", cat: "Essen & Reisen", ex: "Arrivo alle 14:00." },
+  { it: "Il ritardo", de: "Verspätung", cat: "Essen & Reisen", ex: "Il treno ha un ritardo." },
+  { it: "La benzina", de: "Benzin", cat: "Essen & Reisen", ex: "Ho bisogno di benzina." },
+  { it: "Il parcheggio", de: "Parkplatz", cat: "Essen & Reisen", ex: "Dov'è il parcheggio?" },
+  { it: "L'autostrada", de: "Autobahn", cat: "Essen & Reisen", ex: "Guidavamo sull'autostrada." },
+  { it: "Il semaforo", de: "Ampel", cat: "Essen & Reisen", ex: "Fermatevi al semaforo." },
+  { it: "La dogana", de: "Zoll", cat: "Essen & Reisen", ex: "Dobbiamo passare la dogana." },
+  { it: "Il bagaglio", de: "Gepäck", cat: "Essen & Reisen", ex: "Il mio bagaglio è pesante." },
+  { it: "Il viaggio", de: "Reise", cat: "Essen & Reisen", ex: "Adoro viaggiare." },
+  { it: "Le vacanze", de: "Urlaub", cat: "Essen & Reisen", ex: "Andiamo in vacanza." },
+  { it: "Il turismo", de: "Tourismus", cat: "Essen & Reisen", ex: "Il turismo è importante." },
+  { it: "La gita", de: "Ausflug", cat: "Essen & Reisen", ex: "Pianifichiamo una gita." },
+
+  // ── Körper & Gesundheit (40) ──
+  { it: "Il corpo", de: "Körper", cat: "Gesundheit & Notfall", ex: "Un corpo sano." },
+  { it: "La testa", de: "Kopf", cat: "Gesundheit & Notfall", ex: "Mi fa male la testa." },
+  { it: "Il viso", de: "Gesicht", cat: "Gesundheit & Notfall", ex: "Lavati il viso." },
+  { it: "Gli occhi", de: "Augen", cat: "Gesundheit & Notfall", ex: "Ha gli occhi azzurri." },
+  { it: "Le orecchie", de: "Ohren", cat: "Gesundheit & Notfall", ex: "Mi fa male l'orecchio." },
+  { it: "Il naso", de: "Nase", cat: "Gesundheit & Notfall", ex: "Ho il naso che cola." },
+  { it: "La bocca", de: "Mund", cat: "Gesundheit & Notfall", ex: "Apra la bocca." },
+  { it: "I denti", de: "Zähne", cat: "Gesundheit & Notfall", ex: "Mi fa male un dente." },
+  { it: "La gola", de: "Hals / Kehle", cat: "Gesundheit & Notfall", ex: "Ho mal di gola." },
+  { it: "La spalla", de: "Schulter", cat: "Gesundheit & Notfall", ex: "Mi fa male la spalla." },
+  { it: "Il braccio / La mano", de: "Arm / Hand", cat: "Gesundheit & Notfall", ex: "Mi sono rotto un braccio." },
+  { it: "Il dito", de: "Finger", cat: "Gesundheit & Notfall", ex: "Mi sono tagliato il dito." },
+  { it: "La pancia", de: "Bauch", cat: "Gesundheit & Notfall", ex: "Ho mal di pancia." },
+  { it: "La schiena", de: "Rücken", cat: "Gesundheit & Notfall", ex: "Ho mal di schiena." },
+  { it: "La gamba / Il piede", de: "Bein / Fuß", cat: "Gesundheit & Notfall", ex: "Mi fa male la gamba." },
+  { it: "Il ginocchio", de: "Knie", cat: "Gesundheit & Notfall", ex: "Ho problemi al ginocchio." },
+  { it: "Il cuore", de: "Herz", cat: "Gesundheit & Notfall", ex: "Ho il cuore sano." },
+  { it: "I polmoni", de: "Lunge", cat: "Gesundheit & Notfall", ex: "Il fumo fa male ai polmoni." },
+  { it: "Malato", de: "Krank", cat: "Gesundheit & Notfall", ex: "Mi sento malato." },
+  { it: "Sano", de: "Gesund", cat: "Gesundheit & Notfall", ex: "Sono sano." },
+  { it: "La febbre", de: "Fieber", cat: "Gesundheit & Notfall", ex: "Ho la febbre." },
+  { it: "La tosse", de: "Husten", cat: "Gesundheit & Notfall", ex: "Ho una forte tosse." },
+  { it: "Il raffreddore", de: "Schnupfen", cat: "Gesundheit & Notfall", ex: "Ho il raffreddore." },
+  { it: "Il dolore", de: "Schmerz", cat: "Gesundheit & Notfall", ex: "Ho un dolore." },
+  { it: "La medicina", de: "Medikament", cat: "Gesundheit & Notfall", ex: "Ho bisogno di una medicina." },
+  { it: "Il medico", de: "Arzt / Ärztin", cat: "Gesundheit & Notfall", ex: "Vado dal medico." },
+  { it: "L'ospedale", de: "Krankenhaus", cat: "Gesundheit & Notfall", ex: "Portami all'ospedale." },
+  { it: "L'ambulanza", de: "Krankenwagen", cat: "Gesundheit & Notfall", ex: "Chiamate un'ambulanza!" },
+  { it: "L'allergia", de: "Allergie", cat: "Gesundheit & Notfall", ex: "Ho un'allergia al polline." },
+  { it: "L'operazione", de: "Operation", cat: "Gesundheit & Notfall", ex: "Ho bisogno di un'operazione." },
+  { it: "La ricetta", de: "Rezept", cat: "Gesundheit & Notfall", ex: "Il medico mi ha dato una ricetta." },
+  { it: "L'assicurazione", de: "Versicherung", cat: "Gesundheit & Notfall", ex: "Ho un'assicurazione sanitaria." },
+  { it: "La stanchezza", de: "Müdigkeit / Erschöpfung", cat: "Gesundheit & Notfall", ex: "Sento molta stanchezza." },
+  { it: "Lo stress", de: "Stress", cat: "Gesundheit & Notfall", ex: "Ho molto stress." },
+  { it: "Il sonno", de: "Schlaf", cat: "Gesundheit & Notfall", ex: "Ho bisogno di dormire di più." },
+  { it: "L'esercizio", de: "Sport / Übung", cat: "Gesundheit & Notfall", ex: "Faccio esercizio ogni giorno." },
+  { it: "La dieta", de: "Diät", cat: "Gesundheit & Notfall", ex: "Sono a dieta." },
+  { it: "Il peso", de: "Gewicht", cat: "Gesundheit & Notfall", ex: "Voglio perdere peso." },
+  { it: "Il sangue", de: "Blut", cat: "Gesundheit & Notfall", ex: "Analisi del sangue." },
+  { it: "La ferita", de: "Verletzung / Wunde", cat: "Gesundheit & Notfall", ex: "Ho una ferita." },
+
+  // ── Einkaufen & Geld (40) ──
+  { it: "Il negozio", de: "Geschäft / Laden", cat: "Alltag & Einkaufen", ex: "Dov'è il negozio?" },
+  { it: "Il supermercato", de: "Supermarkt", cat: "Alltag & Einkaufen", ex: "Vado al supermercato." },
+  { it: "Il prezzo", de: "Preis", cat: "Alltag & Einkaufen", ex: "Qual è il prezzo?" },
+  { it: "Quanto costa?", de: "Was kostet es?", cat: "Alltag & Einkaufen", ex: "Quanto costa questo?" },
+  { it: "Economico", de: "Günstig / Billig", cat: "Alltag & Einkaufen", ex: "È molto economico." },
+  { it: "Caro", de: "Teuer", cat: "Alltag & Einkaufen", ex: "È troppo caro." },
+  { it: "Lo sconto", de: "Rabatt / Ermäßigung", cat: "Alltag & Einkaufen", ex: "C'è uno sconto?" },
+  { it: "I saldi", de: "Ausverkauf / Sale", cat: "Alltag & Einkaufen", ex: "Ci sono i saldi!" },
+  { it: "La cassa", de: "Kasse", cat: "Alltag & Einkaufen", ex: "Pago alla cassa." },
+  { it: "Lo scontrino", de: "Kassenbon / Quittung", cat: "Alltag & Einkaufen", ex: "Posso avere lo scontrino?" },
+  { it: "I contanti", de: "Bargeld", cat: "Alltag & Einkaufen", ex: "Pago in contanti." },
+  { it: "La carta di credito", de: "Kreditkarte", cat: "Alltag & Einkaufen", ex: "Posso pagare con la carta?" },
+  { it: "L'euro", de: "Euro", cat: "Alltag & Einkaufen", ex: "Venti euro." },
+  { it: "Il centesimo", de: "Cent", cat: "Alltag & Einkaufen", ex: "Cinquanta centesimi." },
+  { it: "La moneta", de: "Münze", cat: "Alltag & Einkaufen", ex: "Ho solo monete." },
+  { it: "La banconota", de: "Geldschein", cat: "Alltag & Einkaufen", ex: "Ho una banconota da cinquanta." },
+  { it: "Il bancomat", de: "Geldautomat / ATM", cat: "Alltag & Einkaufen", ex: "Dov'è il bancomat?" },
+  { it: "Il cambio", de: "Geldwechsel", cat: "Alltag & Einkaufen", ex: "Dove cambio i soldi?" },
+  { it: "I vestiti", de: "Kleidung", cat: "Alltag & Einkaufen", ex: "Compro dei vestiti nuovi." },
+  { it: "La taglia", de: "Größe", cat: "Alltag & Einkaufen", ex: "Che taglia ha?" },
+  { it: "Il camerino", de: "Umkleidekabine", cat: "Alltag & Einkaufen", ex: "Dov'è il camerino?" },
+  { it: "Le scarpe", de: "Schuhe", cat: "Alltag & Einkaufen", ex: "Queste scarpe sono comode." },
+  { it: "Il centro commerciale", de: "Einkaufszentrum", cat: "Alltag & Einkaufen", ex: "Andiamo al centro commerciale." },
+  { it: "Il mercato", de: "Markt", cat: "Alltag & Einkaufen", ex: "Al mercato c'è frutta fresca." },
+  { it: "Il reso", de: "Rückgabe", cat: "Alltag & Einkaufen", ex: "Voglio fare un reso." },
+  { it: "La garanzia", de: "Garantie", cat: "Alltag & Einkaufen", ex: "Qual è la garanzia?" },
+  { it: "Il regalo", de: "Geschenk", cat: "Alltag & Einkaufen", ex: "Cerco un regalo per un amico." },
+  { it: "La borsa", de: "Tasche / Tüte", cat: "Alltag & Einkaufen", ex: "Posso avere una borsa?" },
+  { it: "La lista della spesa", de: "Einkaufsliste", cat: "Alltag & Einkaufen", ex: "Ho scritto la lista della spesa." },
+  { it: "Il cliente", de: "Kunde / Kundin", cat: "Alltag & Einkaufen", ex: "Il cliente ha sempre ragione." },
+  { it: "Il commesso", de: "Verkäufer/in", cat: "Alltag & Einkaufen", ex: "Il commesso mi ha aiutato." },
+  { it: "Aperto", de: "Geöffnet / Offen", cat: "Alltag & Einkaufen", ex: "Il negozio è aperto." },
+  { it: "Chiuso", de: "Geschlossen", cat: "Alltag & Einkaufen", ex: "Il negozio è chiuso." },
+  { it: "L'orario di apertura", de: "Öffnungszeiten", cat: "Alltag & Einkaufen", ex: "Qual è l'orario di apertura?" },
+  { it: "Risparmiare", de: "Sparen", cat: "Alltag & Einkaufen", ex: "Voglio risparmiare denaro." },
+  { it: "Pagare", de: "Zahlen / Bezahlen", cat: "Alltag & Einkaufen", ex: "Voglio pagare." },
+  { it: "Prestare", de: "Leihen / Ausleihen", cat: "Alltag & Einkaufen", ex: "Puoi prestarmi dei soldi?" },
+  { it: "Il debito", de: "Schulden", cat: "Alltag & Einkaufen", ex: "Ho un debito." },
+  { it: "La conferma", de: "Bestätigung / Beleg", cat: "Alltag & Einkaufen", ex: "Mandami la conferma." },
+  { it: "L'ordine", de: "Bestellung", cat: "Alltag & Einkaufen", ex: "Voglio fare un ordine." },
 ];
 
-const itinerary = {
-  fr: [
-    {time:'08:30',ico:'✈️',name:'Abflug Wien Schwechat',desc:'airBaltic BT 832 · Direktflug · Nur Handgepäck'},
-    {time:'11:50',ico:'🛬',name:'Ankunft Tallinn Lennart Meri',desc:'Transfer per Bolt ins Hotel · ca. 10–15 Minuten'},
-    {time:'12:30',ico:'🏨',name:'Einchecken & durchatmen',desc:'Kurze Ruhepause — Tallinn wartet'},
-    {time:'13:30',ico:'🏰',name:'Erster Spaziergang',desc:'Viru Gate → Rathausplatz → Katharinenpassage → Toompea Hügel → Patkuli Aussichtspunkt',pid:4},
-    {time:'15:00',ico:'☕',name:'RØST Bakery',desc:'Nordische Bäckerei · Zimtschnecken & fantastischer Kaffee',pid:35},
-    {time:'16:00',ico:'🚶',name:'Altstadt erkunden',desc:'Treiben lassen — versteckte Höfe, Lehmpforte, Dompark'},
-    {time:'18:00',ico:'🔭',name:'Sonnenuntergang am Patkuli',desc:'Der schönste Blick über die Altstadt — früh sein!',pid:21},
-    {time:'19:30',ico:'🍽️',name:'Dinner: Rataskaevu 16',desc:'Moderne estnische Küche mitten in der Altstadt',pid:27},
-    {time:'21:30',ico:'🍸',name:'Whisper Sister',desc:'Hinter der unscheinbaren Tür klingeln — Kerzenlicht & Jazz',pid:40},
-  ],
-  sa: [
-    {time:'09:00',ico:'☕',name:'Frühstück & Kaffee',desc:'Langsam aufwachen — Tallinn ist morgens leise'},
-    {time:'10:00',ico:'🕵️',name:'KGB Museum & Hotel Viru',desc:'Führung durch Sowjetzeit, Überwachung und Kalten Krieg',pid:11},
-    {time:'12:30',ico:'🍽️',name:'Mittagessen: F-Hoone',desc:'Legendäres Restaurant in ehemaliger Industriehalle in Telliskivi',pid:28},
-    {time:'13:30',ico:'🏭',name:'Telliskivi Creative City',desc:'Street Art, Designshops, Cafés — kreatives Tallinn',pid:9},
-    {time:'15:00',ico:'🎨',name:'Street Art Kalamaja',desc:'Street Art Koit ja Hämarik, Naine und weitere Murals',pid:48},
-    {time:'16:00',ico:'⚓',name:'Spaziergang Noblessner',desc:'Am Wasser entlang — Architektur, maritime Stimmung',pid:10},
-    {time:'17:00',ico:'📸',name:'Fotografiska Tallinn',desc:'Museum + Rooftop-Bar mit Blick über Hafen & Altstadt',pid:46},
-    {time:'19:30',ico:'🍽️',name:'Dinner: NOA Restaurant',desc:'Am Wasser, Blick auf die Altstadt, nordische Küche',pid:29},
-    {time:'21:30',ico:'🍺',name:'Põhjala Tap Room',desc:'Industrial Chic · Craft Beer · oft Live-Musik',pid:43},
-  ],
-  so: [
-    {time:'09:00',ico:'☕',name:'Brunch & letzter Kaffee',desc:'Fika, Reval Cafe oder Lore Bistro'},
-    {time:'10:00',ico:'🌸',name:'Option A: Kadriorg Park & Schloss',desc:'Großer Park, barockes Schloss, ruhige Wege — perfekt zum Durchatmen',pid:17},
-    {time:'10:00',ico:'🛍️',name:'Option B: Balti Jaam Markt',desc:'Moderner Markt mit lokalen Spezialitäten und kleinen Shops',pid:12},
-    {time:'10:00',ico:'🏰',name:'Option C: Letzter Altstadt-Spaziergang',desc:'Noch einmal Kopfsteinpflaster, Aussichtspunkte, Innenhöfe'},
-    {time:'12:00',ico:'🎨',name:'Kumu Art Museum',desc:'Größtes Kunstmuseum der baltischen Staaten — überraschend beeindruckend',pid:47},
-    {time:'14:00',ico:'🚶',name:'Letzter Bummel',desc:'Kleine Lieblingsorte, ein letzter Cappuccino'},
-    {time:'15:15',ico:'✈️',name:'Abflug Tallinn → Riga',desc:'airBaltic BT 314 · Transfer zum Flughafen rechtzeitig!'},
-    {time:'16:05',ico:'🔄',name:'Zwischenstopp Riga',desc:'2h 35 min Wartezeit in Riga (RIX)'},
-    {time:'18:40',ico:'✈️',name:'Abflug Riga → Wien',desc:'airBaltic BT 273'},
-    {time:'19:40',ico:'🏠',name:'Ankunft Wien Schwechat',desc:'Willkommen zurück — Tallinn bleibt in Erinnerung'},
-  ],
-};
+const PHRASES = [
+  { it: "Come si chiama?", de: "Wie heißen Sie?", context: "Kennenlernen" },
+  { it: "Mi chiamo...", de: "Ich heiße...", context: "Kennenlernen" },
+  { it: "Di dove viene?", de: "Woher kommen Sie?", context: "Kennenlernen" },
+  { it: "Sono dell'Austria.", de: "Ich bin aus Österreich.", context: "Kennenlernen" },
+  { it: "Come sta?", de: "Wie geht es Ihnen?", context: "Begrüßung" },
+  { it: "Bene, grazie.", de: "Gut, danke.", context: "Begrüßung" },
+  { it: "Non capisco.", de: "Ich verstehe nicht.", context: "Sprachprobleme" },
+  { it: "Parla tedesco?", de: "Sprechen Sie Deutsch?", context: "Sprachprobleme" },
+  { it: "Può ripetere?", de: "Können Sie das wiederholen?", context: "Sprachprobleme" },
+  { it: "Quanto costa?", de: "Was kostet das?", context: "Einkaufen" },
+  { it: "Dov'è la fermata?", de: "Wo ist die Haltestelle?", context: "Orientierung" },
+  { it: "Mi aiuti, per favore.", de: "Bitte helfen Sie mir.", context: "Hilfe" },
+  { it: "Chiamate la polizia!", de: "Rufen Sie die Polizei!", context: "Notfall" },
+  { it: "Ho bisogno di un medico.", de: "Ich brauche einen Arzt.", context: "Notfall" },
+  { it: "Dov'è l'ospedale?", de: "Wo ist das Krankenhaus?", context: "Notfall" },
+  { it: "Ho una prenotazione.", de: "Ich habe eine Reservierung.", context: "Hotel" },
+  { it: "A che ora è la colazione?", de: "Wann gibt es Frühstück?", context: "Hotel" },
+  { it: "Vorrei pagare.", de: "Ich möchte zahlen.", context: "Restaurant" },
+  { it: "Senza carne, per favore.", de: "Ohne Fleisch, bitte.", context: "Restaurant" },
+  { it: "È libero qui?", de: "Ist hier noch frei?", context: "Restaurant" },
+  { it: "Un tavolo per due.", de: "Einen Tisch für zwei.", context: "Restaurant" },
+  { it: "Il conto, per favore.", de: "Die Rechnung, bitte.", context: "Restaurant" },
+  { it: "Dov'è il bagno?", de: "Wo ist die Toilette?", context: "Alltag" },
+  { it: "Mi sono perso.", de: "Ich habe mich verirrt.", context: "Orientierung" },
+];
 
-// ── APP LOGIC ─────────────────────────────────────────────────────────
-let map = null;
-let mapInitialized = false;
-let markerData = []; // {marker, place}
-
-function nav(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('s-' + id).classList.add('active');
-  document.getElementById('btn-' + id).classList.add('active');
-  if (id === 'map') {
-    if (!mapInitialized) initMap();
-    setTimeout(() => { if(map) map.invalidateSize(true); }, 100);
-    setTimeout(() => { if(map) map.invalidateSize(true); }, 400);
+const GRAMMAR = [
+  {
+    title: "Persönliche Fürwörter",
+    description: "io, tu, lui, lei...",
+    table: [["Ich","io"],["Du","tu"],["Er","lui"],["Sie (f)","lei"],["Wir","noi"],["Ihr","voi"],["Sie (formal)","Lei"],["Sie (pl)","loro"]],
+    tip: "Das formelle Lei (großgeschrieben) entspricht dem deutschen 'Sie'. Sehr wichtig im Italienischen!"
+  },
+  {
+    title: "Verb essere — sein",
+    description: "io sono, tu sei...",
+    table: [["Ich bin","io sono"],["Du bist","tu sei"],["Er/Sie ist","lui/lei è"],["Wir sind","noi siamo"],["Ihr seid","voi siete"],["Sie sind","loro sono"]],
+    tip: "sono = ich bin / sie sind (je nach Kontext). Achtung bei der Doppelbedeutung!"
+  },
+  {
+    title: "Verb avere — haben",
+    description: "io ho, tu hai...",
+    table: [["Ich habe","io ho"],["Du hast","tu hai"],["Er/Sie hat","lui/lei ha"],["Wir haben","noi abbiamo"],["Ihr habt","voi avete"],["Sie haben","loro hanno"]],
+    tip: "ho = ich habe. Wird auch für das Perfekt verwendet: ho mangiato = ich habe gegessen."
+  },
+  {
+    title: "Verb andare — gehen",
+    description: "io vado, tu vai...",
+    table: [["Ich gehe","io vado"],["Du gehst","tu vai"],["Er/Sie geht","lui/lei va"],["Wir gehen","noi andiamo"],["Ihr geht","voi andate"],["Sie gehen","loro vanno"]],
+    tip: "Vado a casa = Ich gehe nach Hause. vado, vai, va — unregelmäßig!"
+  },
+  {
+    title: "Verb parlare — sprechen",
+    description: "io parlo, tu parli...",
+    table: [["Ich spreche","io parlo"],["Du sprichst","tu parli"],["Er/Sie spricht","lui/lei parla"],["Wir sprechen","noi parliamo"],["Ihr sprecht","voi parlate"],["Sie sprechen","loro parlano"]],
+    tip: "parlare gehört zur -are Gruppe — die häufigste Verbgruppe im Italienischen."
+  },
+  {
+    title: "Verb mangiare — essen",
+    description: "io mangio, tu mangi...",
+    table: [["Ich esse","io mangio"],["Du isst","tu mangi"],["Er/Sie isst","lui/lei mangia"],["Wir essen","noi mangiamo"],["Ihr esst","voi mangiate"],["Sie essen","loro mangiano"]],
+    tip: "Mangio la pasta = Ich esse Pasta. Das 'i' in 'mangi' hält das 'g' weich."
+  },
+  {
+    title: "Verneinung",
+    description: "Wie man Nein sagt",
+    table: [["Ich habe","Ho"],["Ich habe nicht","Non ho"],["Ich gehe","Vado"],["Ich gehe nicht","Non vado"],["Ich bin","Sono"],["Ich bin nicht","Non sono"],["Ich spreche","Parlo"],["Ich spreche nicht","Non parlo"]],
+    tip: "Verneinung = non vor das Verb setzen. Einfach und immer gleich!"
+  },
+  {
+    title: "Fragewörter",
+    description: "Dove? Quando? Chi? Come?",
+    table: [["Wer?","Chi?"],["Was?","Cosa? / Che cosa?"],["Wo?","Dove?"],["Wohin?","Dove? (+ Bewegung)"],["Wann?","Quando?"],["Wie?","Come?"],["Wie viel?","Quanto?"],["Warum?","Perché?"],["Welche/r/s?","Quale?"]],
+    tip: "Dove = Wo (für Ort und Richtung). Perché = Warum, aber auch: Weil!"
+  },
+  {
+    title: "Artikel — bestimmt",
+    description: "der, die, das auf Italienisch",
+    table: [["der (m, Kons.)","il (il libro)"],["der (m, Vokal)","l' (l'amico)"],["der (m, s+K, z)","lo (lo studente)"],["die (f, Kons.)","la (la casa)"],["die (f, Vokal)","l' (l'amica)"],["die (pl, m)","i / gli"],["die (pl, f)","le"]],
+    tip: "lo statt il: vor s+Konsonant, z, gn, ps, x. l' vor Vokal. Viele Ausnahmen!"
+  },
+  {
+    title: "Adjektive — Grundformen",
+    description: "groß, klein, gut, schlecht...",
+    table: [["groß","grande (m/f)"],["klein","piccolo/a"],["gut","buono/a"],["schlecht","cattivo/a"],["schön","bello/a"],["neu","nuovo/a"],["alt","vecchio/a"],["schnell","veloce (m/f)"],["langsam","lento/a"],["teuer","caro/a"]],
+    tip: "Adjektive enden auf -o (m) / -a (f). Aber: grande, veloce bleiben gleich für m/f."
+  },
+  {
+    title: "Plural — Mehrzahl",
+    description: "Wie man Mehrzahl bildet",
+    table: [["Haus — Häuser","casa — case"],["Auto — Autos","auto — auto"],["Mann — Männer","uomo — uomini"],["Frau — Frauen","donna — donne"],["Kind — Kinder","bambino — bambini"],["Tag — Tage","giorno — giorni"],["Stadt — Städte","città — città"]],
+    tip: "-o → -i (männlich), -a → -e (weiblich). Unveränderlich: Wörter auf Akzentvokal."
+  },
+  {
+    title: "Uhrzeiten",
+    description: "Che ore sono?",
+    table: [["Wie spät ist es?","Che ore sono?"],["Es ist 1 Uhr","È l'una"],["Es ist 2 Uhr","Sono le due"],["Es ist 5 Uhr","Sono le cinque"],["Um 8 Uhr","Alle otto"],["halb 3","Le due e mezza"],["Viertel nach 4","Le quattro e un quarto"],["Mittag","mezzogiorno"],["Mitternacht","mezzanotte"]],
+    tip: "È l'una (1 Uhr) — aber: Sono le due, le tre... für alle anderen Stunden."
+  },
+  {
+    title: "Possessivpronomen",
+    description: "mio, tuo, suo...",
+    table: [["mein (m)","mio"],["meine (f)","mia"],["dein (m)","tuo"],["deine (f)","tua"],["sein/ihr (m)","suo"],["sein/ihr (f)","sua"],["unser","nostro/a"],["euer","vostro/a"]],
+    tip: "Besonderheit: Famiglia-Wörter meist ohne Artikel: mio padre (nicht il mio padre)."
+  },
+  {
+    title: "Zahlen 1–20",
+    description: "Numeri italiani",
+    table: [["1","uno"],["2","due"],["3","tre"],["4","quattro"],["5","cinque"],["6","sei"],["7","sette"],["8","otto"],["9","nove"],["10","dieci"],["11","undici"],["15","quindici"],["20","venti"]],
+    tip: "Ab 11: undici, dodici, tredici, quattordici, quindici, sedici, diciassette, diciotto, diciannove."
   }
+];
+
+var CATS=["Alle","Grundlagen","Zahlen & Zeit","Essen & Reisen","Alltag & Einkaufen","Gesundheit & Notfall"];
+
+function speak(text){
+  if(!window.speechSynthesis)return;
+  window.speechSynthesis.cancel();
+  var u=new SpeechSynthesisUtterance(text),vs=window.speechSynthesis.getVoices(),found=null;
+  for(var i=0;i<vs.length;i++){if(vs[i].lang.indexOf("it")===0){found=vs[i];break;}}
+  if(found)u.voice=found;u.lang="it-IT";u.rate=0.88;
+  window.speechSynthesis.speak(u);
 }
 
-function initMap() {
-  map = L.map('map', { center:[59.437,24.745], zoom:14, zoomControl:true });
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    subdomains:'abcd', maxZoom:19
-  }).addTo(map);
-  places.forEach(p => {
-    const icon = L.divIcon({
-      className:'custom-marker',
-      html:`<div class="pin" style="background:${CATS[p.cat].color}"><span>${p.emoji||CATS[p.cat].emoji}</span></div>`,
-      iconSize:[30,36], iconAnchor:[15,36], popupAnchor:[0,-38]
-    });
-    const marker = L.marker([p.lat,p.lng],{icon}).addTo(map).on('click',()=>showDetail(p));
-    markerData.push({marker,place:p});
-  });
-  mapInitialized = true;
-  setTimeout(() => map.invalidateSize(true), 200);
-  setTimeout(() => map.invalidateSize(true), 600);
+function cardSt(ex){return cs({background:WH,borderRadius:20,boxShadow:SH,padding:20},ex||{});}
+function pillSt(active){return{padding:"7px 15px",borderRadius:999,border:"none",fontFamily:"inherit",whiteSpace:"nowrap",cursor:"pointer",fontSize:13,fontWeight:active?600:400,background:active?GREEN:"transparent",color:active?"#fff":GR};}
+function lblSt(){return{fontSize:11,fontWeight:600,letterSpacing:0.8,color:LT,textTransform:"uppercase",marginBottom:8};}
+function btnSt(){return{width:"100%",padding:"15px",borderRadius:999,border:"none",fontFamily:"inherit",fontSize:16,fontWeight:600,cursor:"pointer",background:GREEN,color:"#fff",boxShadow:SGH};}
+
+function IcoLearn(c){return h("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:"none",stroke:c,strokeWidth:1.8,strokeLinecap:"round"},h("path",{d:"M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"}),h("path",{d:"M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"}));}
+function IcoFlash(c){return h("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:"none",stroke:c,strokeWidth:1.8,strokeLinecap:"round"},h("rect",{x:2,y:3,width:20,height:14,rx:2}),h("path",{d:"M8 21h8M12 17v4"}));}
+function IcoQuiz(c){return h("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:"none",stroke:c,strokeWidth:1.8,strokeLinecap:"round"},h("circle",{cx:12,cy:12,r:10}),h("path",{d:"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"}),h("line",{x1:12,y1:17,x2:12.01,y2:17,strokeWidth:3}));}
+function IcoKnow(c){return h("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:"none",stroke:c,strokeWidth:1.8,strokeLinecap:"round"},h("path",{d:"M12 2L2 7l10 5 10-5-10-5z"}),h("path",{d:"M2 17l10 5 10-5"}),h("path",{d:"M2 12l10 5 10-5"}));}
+function IcoProg(c){return h("svg",{width:22,height:22,viewBox:"0 0 24 24",fill:"none",stroke:c,strokeWidth:1.8,strokeLinecap:"round"},h("line",{x1:18,y1:20,x2:18,y2:10}),h("line",{x1:12,y1:20,x2:12,y2:4}),h("line",{x1:6,y1:20,x2:6,y2:14}));}
+function IcoSpeak(c){return h("svg",{width:15,height:15,viewBox:"0 0 24 24",fill:"none",stroke:c,strokeWidth:2,strokeLinecap:"round"},h("polygon",{points:"11 5 6 9 2 9 2 15 6 15 11 19 11 5"}),h("path",{d:"M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"}));}
+function IcoDn(c){return h("svg",{width:15,height:15,viewBox:"0 0 24 24",fill:"none",stroke:c,strokeWidth:2,strokeLinecap:"round"},h("path",{d:"M6 9l6 6 6-6"}));}
+
+function Ring(props){
+  var size=props.size||72,stroke=props.stroke||5,color=props.color||GREEN;
+  var pct=Math.min(props.pct||0,100),r=(size-stroke)/2,circ=2*Math.PI*r;
+  return h("svg",{width:size,height:size,style:{transform:"rotate(-90deg)"}},
+    h("circle",{cx:size/2,cy:size/2,r:r,fill:"none",stroke:BR,strokeWidth:stroke}),
+    h("circle",{cx:size/2,cy:size/2,r:r,fill:"none",stroke:color,strokeWidth:stroke,
+      strokeDasharray:circ,strokeDashoffset:circ*(1-pct/100),strokeLinecap:"round",
+      style:{transition:"stroke-dashoffset 0.6s"}}));
 }
 
-function filterMap(cat, btn) {
-  markerData.forEach(({marker,place}) => {
-    if (cat==='all' || place.cat===cat) marker.addTo(map);
-    else marker.remove();
-  });
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+// Italian flag stripe decoration
+function FlagStripe(){
+  return h("div",{style:{display:"flex",height:3,borderRadius:2,overflow:"hidden",marginBottom:20}},
+    h("div",{style:{flex:1,background:GREEN}}),
+    h("div",{style:{flex:1,background:WH,border:"1px solid #ddd"}}),
+    h("div",{style:{flex:1,background:RED}})
+  );
 }
 
-function showDetail(p) {
-  const cat = CATS[p.cat];
-  const el = id => document.getElementById(id);
-  el('dp-cat').textContent = cat.label;
-  el('dp-cat').style.background = cat.color;
-  el('dp-title').textContent = p.name;
-  el('dp-desc').textContent = p.desc || '';
-  if (p.day) {
-    el('dp-day').textContent = p.day;
-    el('dp-day-wrap').style.display = 'inline-flex';
-  } else {
-    el('dp-day-wrap').style.display = 'none';
+function LearnScreen(props){
+  var prog=loadProgress(),known=new Set(prog.known||[]);
+  var plan=loadPlan(),stats=loadStats();
+  var tod=stats[todayKey()]||{seen:0,correct:0};
+  var pct=Math.min(100,Math.round(tod.seen/plan.dailyGoal*100));
+  var done=tod.seen>=plan.dailyGoal;
+  var hour=new Date().getHours();
+  var greeting=hour<12?"Buongiorno":hour<18?"Buon pomeriggio":"Buonasera";
+  var streak=0,d2=new Date();
+  while(true){var k=d2.toISOString().slice(0,10),ss=stats[k];if(ss&&ss.seen>=plan.dailyGoal){streak++;d2.setDate(d2.getDate()-1);}else break;}
+  var cats=CATS.filter(function(c){return c!=="Alle";});
+  return h("div",{style:{padding:"32px 20px 24px"}},
+    h(FlagStripe,null),
+    h("div",{style:{marginBottom:24}},
+      h("div",{style:{fontSize:28,fontWeight:300,fontFamily:SERIF,color:BLK,marginBottom:4}},greeting+" 🇮🇹"),
+      h("div",{style:{fontSize:15,color:GR}},"Pronto per la tua sessione di studio?")
+    ),
+    h("div",{style:cardSt({display:"flex",alignItems:"center",gap:20,marginBottom:20})},
+      h("div",{style:{position:"relative",flexShrink:0}},
+        h(Ring,{pct:pct,size:76,stroke:5}),
+        h("div",{style:{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column"}},
+          h("div",{style:{fontSize:20,fontWeight:600,color:done?GRN:BLK,lineHeight:1}},tod.seen),
+          h("div",{style:{fontSize:10,color:LT}},"/"+plan.dailyGoal)
+        )
+      ),
+      h("div",{style:{flex:1}},
+        h("div",{style:{fontSize:13,color:GR,marginBottom:2}},"Obiettivo giornaliero"),
+        h("div",{style:{fontSize:15,fontWeight:500,color:BLK}},done?"Obiettivo raggiunto! 🎉":"Ancora "+(plan.dailyGoal-tod.seen)+" parole"),
+        streak>0?h("div",{style:{fontSize:12,color:GREEN,marginTop:4}},"🔥 "+streak+(streak===1?" giorno":" giorni")+" consecutivi"):null
+      )
+    ),
+    h("div",{style:{marginBottom:24}},h("button",{onClick:function(){props.onGo("flash");},style:btnSt()},"Continua a studiare")),
+    h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}},
+      h("div",{style:lblSt()},"ARGOMENTI"),
+      h("span",{style:{fontSize:13,color:GREEN,cursor:"pointer"},onClick:function(){props.onGo("know");}},"\u2192 Tutti")
+    ),
+    h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}},
+      cats.map(function(cat){
+        var tot=0,kk=0;
+        for(var i=0;i<VOCAB.length;i++){if(VOCAB[i].cat===cat){tot++;if(known.has(VOCAB[i].it))kk++;}}
+        var p=tot?Math.round(kk/tot*100):0;
+        return h("div",{key:cat,onClick:function(){props.onGo("flash");},style:{background:WH,borderRadius:16,padding:"14px 16px",boxShadow:SSH,cursor:"pointer"}},
+          h("div",{style:{fontSize:13,fontWeight:500,color:BLK,marginBottom:4}},cat),
+          h("div",{style:{fontSize:11,color:LT,marginBottom:8}},kk+"/"+tot),
+          h("div",{style:{height:3,background:BR,borderRadius:2}},h("div",{style:{height:"100%",width:p+"%",background:GREEN,borderRadius:2}}))
+        );
+      })
+    )
+  );
+}
+
+function FlashScreen(){
+  var r1=useState("Alle"),cat=r1[0],setCat=r1[1];
+  var r2=useState("de2it"),dir=r2[0],setDir=r2[1];
+  var r3=useState(false),flipped=r3[0],setFlipped=r3[1];
+  var r4=useState(0),fkey=r4[0],setFkey=r4[1];
+  var prog=loadProgress();
+  var r5=useState(function(){return new Set(prog.known||[]);}),known=r5[0],setKnown=r5[1];
+  var r6=useState(function(){return new Set(prog.learning||[]);}),learning=r6[0],setLearning=r6[1];
+  var r7=useState(function(){return prog.counts||{};}),counts=r7[0],setCounts=r7[1];
+  var r8=useState(false),ankiMode=r8[0],setAnkiMode=r8[1];
+  var r9=useState(function(){return shuffle(VOCAB.map(function(_,i){return i;}));}),shuffled=r9[0],setShuffled=r9[1];
+  var r10=useState(0),pos=r10[0],setPos=r10[1];
+  var r11=useState(function(){return shuffle(VOCAB.map(function(_,i){return i;}));}),srQ=r11[0],setSrQ=r11[1];
+  var r12=useState(0),srPos=r12[0],setSrPos=r12[1];
+  var r13=useState(false),lit=r13[0],setLit=r13[1];
+  var poolIdx=[];
+  for(var i=0;i<shuffled.length;i++){var vi=shuffled[i];if(cat==="Alle"||VOCAB[vi].cat===cat)poolIdx.push(vi);}
+  var safePos=poolIdx.length?pos%poolIdx.length:0;
+  var safeAnki=srQ.length?srPos%srQ.length:0;
+  var card=ankiMode?VOCAB[srQ[safeAnki]]:VOCAB[poolIdx[safePos]];
+  if(!card)card=VOCAB[0];
+  var cur=ankiMode?safeAnki:safePos;
+  var tot=ankiMode?srQ.length:poolIdx.length;
+  var front=dir==="de2it"?card.de:card.it;
+  var back=dir==="de2it"?card.it:card.de;
+  var tips=getPronTips(card.it);
+  var gPct=Math.round(known.size/VOCAB.length*100);
+  var cardCount=counts[card.it]||0;
+  function flip(){setFkey(function(k){return k+1;});setFlipped(function(f){return !f;});}
+  function switchCat(c){setCat(c);setPos(0);setFlipped(false);setFkey(function(k){return k+1;});setAnkiMode(false);setShuffled(shuffle(VOCAB.map(function(_,i){return i;})));}
+  function nextCard(mark){
+    var it=card.it;
+    var nk=new Set(setArr(known)),nl=new Set(setArr(learning)),nc=cs({},counts);
+    if(mark==="known"){nc[it]=(nc[it]||0)+1;if(nc[it]>=3){nk.add(it);nl.delete(it);}else{nl.add(it);}}
+    else{nc[it]=0;nl.add(it);nk.delete(it);}
+    setKnown(nk);setLearning(nl);setCounts(nc);saveProgress(nk,nl,nc);recordActivity(it,mark==="known");
+    setFlipped(false);setFkey(function(k){return k+1;});
+    if(ankiMode){
+      var ci=srQ[safeAnki],iv=mark==="known"?Math.floor(Math.random()*11)+20:Math.floor(Math.random()*8)+3;
+      setSrQ(function(q){var nq=q.slice();nq.splice(srPos+iv,0,ci);return nq;});
+      setTimeout(function(){setSrPos(function(p){return p+1;});},120);
+    } else {
+      var pl=poolIdx.length;setTimeout(function(){setPos(function(p){return pl?(p+1)%pl:0;});},120);
+    }
   }
-  el('dp-maps').href = `https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lng}`;
-  el('detail-panel').classList.add('open');
-  el('detail-overlay').classList.add('open');
+  function tapSpeak(e){e.stopPropagation();speak(card.it);setLit(true);setTimeout(function(){setLit(false);},600);}
+  var dots=[];
+  for(var di=0;di<3;di++){dots.push(h("div",{key:di,style:{width:6,height:6,borderRadius:999,background:di<cardCount?GREEN:BR,transition:"background 0.2s"}}));}
+  return h("div",{style:{padding:"20px 20px 8px"}},
+    h("div",{style:{display:"flex",gap:6,marginBottom:12,alignItems:"center"}},
+      h("button",{onClick:function(){setDir("de2it");setFlipped(false);setFkey(function(k){return k+1;});},style:pillSt(dir==="de2it")},"🇩🇪 → 🇮🇹"),
+      h("button",{onClick:function(){setDir("it2de");setFlipped(false);setFkey(function(k){return k+1;});},style:pillSt(dir==="it2de")},"🇮🇹 → 🇩🇪"),
+      h("button",{onClick:function(){setSrQ(shuffle(VOCAB.map(function(_,i){return i;})));setSrPos(0);setAnkiMode(function(a){return !a;});setFlipped(false);setFkey(function(k){return k+1;});},
+        style:{marginLeft:"auto",padding:"7px 14px",borderRadius:999,border:"none",fontFamily:"inherit",fontSize:13,cursor:"pointer",background:ankiMode?GS:"transparent",color:ankiMode?GREEN:GR}},"🧠 Anki")
+    ),
+    h("div",{style:{display:"flex",gap:6,overflowX:"auto",paddingBottom:10,marginBottom:10}},
+      CATS.map(function(c){return h("button",{key:c,onClick:function(){switchCat(c);},style:pillSt(!ankiMode&&cat===c)},c);})
+    ),
+    h("div",{style:{display:"flex",alignItems:"center",gap:10,marginBottom:16}},
+      h("div",{style:{flex:1,height:3,background:BR,borderRadius:2}},
+        h("div",{style:{height:"100%",width:Math.round((cur+1)/Math.max(tot,1)*100)+"%",background:GREEN,borderRadius:2,transition:"width 0.4s"}})
+      ),
+      h("span",{style:{fontSize:12,color:LT,flexShrink:0}},(cur+1)+"/"+tot)
+    ),
+    h("div",{key:fkey,className:"fi",onClick:flip,style:{background:WH,borderRadius:28,boxShadow:SH,cursor:"pointer",padding:"32px 24px",textAlign:"center",position:"relative",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minHeight:240,marginBottom:16,borderTop:"3px solid "+GREEN}},
+      h("div",{style:{position:"absolute",top:14,left:14}},
+        h("span",{style:{fontSize:11,fontWeight:500,color:LT,background:BR,padding:"3px 9px",borderRadius:999}},
+          dir==="de2it"?(flipped?"🇮🇹":"🇩🇪"):(flipped?"🇩🇪":"🇮🇹"))
+      ),
+      h("div",{style:{position:"absolute",top:12,right:12}},
+        h("button",{onClick:tapSpeak,style:{width:38,height:38,borderRadius:999,cursor:"pointer",border:"1.5px solid "+(lit?GREEN:BR),background:lit?GS:WH,display:"flex",alignItems:"center",justifyContent:"center"}},IcoSpeak(lit?GREEN:GR))
+      ),
+      h("div",{style:{fontSize:11,fontWeight:500,color:GREEN,background:GS,padding:"3px 10px",borderRadius:999,marginBottom:16}},card.cat),
+      h("div",{style:{fontSize:front.length>14?28:42,fontWeight:300,fontFamily:SERIF,color:flipped?GR:BLK,lineHeight:1.25,marginBottom:8}},flipped?back:front),
+      !flipped?h("div",{style:{fontSize:13,color:LT}},"Tocca per girare"):null,
+      flipped?h("div",{style:{fontSize:14,color:GR,fontStyle:"italic",marginTop:4,maxWidth:260}},card.ex):null,
+      flipped&&tips.length?h("div",{style:{display:"flex",gap:6,flexWrap:"wrap",justifyContent:"center",marginTop:8}},
+        tips.map(function(t){return h("span",{key:t,style:{fontSize:11,color:GREEN,background:GS,padding:"2px 8px",borderRadius:999}},t);})):null,
+      h("div",{style:{display:"flex",gap:4,justifyContent:"center",marginTop:10}},dots)
+    ),
+    flipped
+      ?h("div",{style:{display:"flex",gap:10,marginBottom:12}},
+          h("button",{onClick:function(){nextCard("learning");},style:{flex:1,padding:"14px",borderRadius:999,fontFamily:"inherit",border:"1.5px solid rgba(206,43,55,0.2)",background:"rgba(206,43,55,0.05)",color:RED,fontSize:15,fontWeight:500,cursor:"pointer"}},"✕ Difficile"),
+          h("button",{onClick:function(){nextCard("known");},style:{flex:2,padding:"14px",borderRadius:999,fontFamily:"inherit",border:"none",background:GREEN,color:"#fff",fontSize:15,fontWeight:600,cursor:"pointer",boxShadow:SGH}},"Facile ✓")
+        )
+      :h("div",{style:{marginBottom:12}},h("button",{onClick:flip,style:btnSt()},"Mostra risposta")),
+    h("div",{style:{display:"flex",justifyContent:"center",gap:32,paddingBottom:4}},
+      h("div",{style:{textAlign:"center"}},h("div",{style:{fontSize:16,fontWeight:600,color:GRN}},known.size),h("div",{style:{fontSize:11,color:LT}},"Imparate")),
+      h("div",{style:{textAlign:"center"}},h("div",{style:{fontSize:16,fontWeight:600,color:GREEN}},gPct+"%"),h("div",{style:{fontSize:11,color:LT}},"Totale")),
+      h("div",{style:{textAlign:"center"}},h("div",{style:{fontSize:16,fontWeight:600,color:RED}},learning.size),h("div",{style:{fontSize:11,color:LT}},"Ripassare"))
+    )
+  );
 }
 
-function closeDetail() {
-  document.getElementById('detail-panel').classList.remove('open');
-  document.getElementById('detail-overlay').classList.remove('open');
+function QuizScreen(){
+  var r1=useState("de2it"),mode=r1[0],setMode=r1[1];
+  var r2=useState("Alle"),cat=r2[0],setCat=r2[1];
+  var r3=useState(null),q=r3[0],setQ=r3[1];
+  var r4=useState(null),chosen=r4[0],setChosen=r4[1];
+  var r5=useState({r:0,w:0}),score=r5[0],setScore=r5[1];
+  var r6=useState(0),qkey=r6[0],setQkey=r6[1];
+  var r7=useState(false),noWords=r7[0],setNoWords=r7[1];
+  function gen(){
+    var pool;
+    if(mode==="today"){
+      var tw=getTodayWords();if(!tw.length){setNoWords(true);setQ(null);return;}
+      setNoWords(false);pool=VOCAB.filter(function(v){return tw.indexOf(v.it)!==-1;});
+    } else {
+      setNoWords(false);pool=cat==="Alle"?VOCAB:VOCAB.filter(function(v){return v.cat===cat;});
+    }
+    if(pool.length<2){setQ(null);return;}
+    var c=pool[Math.floor(Math.random()*pool.length)];
+    var useDir=mode==="mixed"||mode==="today"?(Math.random()<0.5?"de2it":"it2de"):mode;
+    var others=VOCAB.filter(function(v){return v.it!==c.it;}).sort(function(){return Math.random()-0.5;}).slice(0,3);
+    var ws=[],opts;
+    if(useDir==="de2it"){
+      for(var i=0;i<others.length;i++)ws.push(others[i].it);
+      opts=ws.concat([c.it]).sort(function(){return Math.random()-0.5;});
+      setQ({question:c.de,answer:c.it,options:opts,card:c,dir:useDir});
+    } else {
+      for(var i=0;i<others.length;i++)ws.push(others[i].de);
+      opts=ws.concat([c.de]).sort(function(){return Math.random()-0.5;});
+      setQ({question:c.it,answer:c.de,options:opts,card:c,dir:useDir});
+    }
+    setChosen(null);setQkey(function(k){return k+1;});
+  }
+  useEffect(function(){gen();},[mode,cat]);
+  function pick(opt){
+    if(chosen!==null)return;setChosen(opt);var ok=opt===q.answer;
+    if(ok)setScore(function(s){return{r:s.r+1,w:s.w};});else setScore(function(s){return{r:s.r,w:s.w+1};});
+    recordActivity(q.card.it,ok);
+  }
+  var tot=score.r+score.w,pct=tot?Math.round(score.r/tot*100):0;
+  var modes=[
+    {id:"de2it",label:"🇩🇪 → 🇮🇹"},
+    {id:"it2de",label:"🇮🇹 → 🇩🇪"},
+    {id:"mixed",label:"🔄 Misto"},
+    {id:"today",label:"📅 Oggi"},
+  ];
+  return h("div",{style:{padding:"20px 20px 24px"}},
+    h("div",{style:{display:"flex",gap:6,overflowX:"auto",paddingBottom:8,marginBottom:12}},
+      modes.map(function(m){return h("button",{key:m.id,onClick:function(){setMode(m.id);setScore({r:0,w:0});},style:pillSt(mode===m.id)},m.label);})
+    ),
+    mode!=="today"?h("div",{style:{display:"flex",gap:6,overflowX:"auto",paddingBottom:8,marginBottom:16}},
+      CATS.map(function(c){return h("button",{key:c,onClick:function(){setCat(c);setScore({r:0,w:0});},style:pillSt(cat===c)},c);})
+    ):h("div",{style:{marginBottom:16}},
+      h("div",{style:{background:GS,borderRadius:12,padding:"10px 16px",fontSize:13,color:GREEN}},"📅 Solo le parole che hai studiato oggi nelle Flashcard")
+    ),
+    h("div",{style:{display:"flex",gap:10,marginBottom:16}},
+      [{v:score.r,l:"Giusto",col:GRN},{v:pct+"%",l:"Punteggio",col:GREEN},{v:score.w,l:"Sbagliato",col:RED}].map(function(item){
+        return h("div",{key:item.l,style:{flex:1,background:WH,borderRadius:14,padding:"12px 8px",textAlign:"center",boxShadow:SSH}},
+          h("div",{style:{fontSize:20,fontWeight:600,color:item.col}},item.v),h("div",{style:{fontSize:11,color:LT}},item.l));
+      })
+    ),
+    noWords?h("div",{style:cardSt({textAlign:"center",padding:"40px 20px"})},
+      h("div",{style:{fontSize:32,marginBottom:12}},"📅"),
+      h("div",{style:{fontSize:16,fontWeight:500,color:BLK,marginBottom:8}},"Nessuna parola oggi"),
+      h("div",{style:{fontSize:14,color:GR}},"Prima studia un po' di vocaboli nelle Flashcard!")
+    ):null,
+    q&&!noWords?h("div",{key:qkey},
+      h("div",{style:cardSt({textAlign:"center",padding:"28px 20px",marginBottom:16})},
+        h("div",{style:{fontSize:12,color:LT,marginBottom:12}},q.dir==="de2it"?"Come si dice in italiano...":"Cosa significa in tedesco..."),
+        h("div",{style:{fontSize:36,fontWeight:300,fontFamily:SERIF,color:BLK,lineHeight:1.2,marginBottom:8}},q.question),
+        h("span",{style:{fontSize:11,color:GREEN,background:GS,padding:"3px 10px",borderRadius:999}},q.card.cat)
+      ),
+      h("div",{style:{display:"flex",flexDirection:"column",gap:10,marginBottom:12}},
+        q.options.map(function(opt){
+          var isC=opt===q.answer,isP=chosen===opt;
+          return h("button",{key:opt,onClick:function(){pick(opt);},style:{padding:"16px 20px",borderRadius:14,fontFamily:"inherit",textAlign:"left",
+            background:chosen?(isC?"rgba(52,199,89,0.08)":isP?"rgba(206,43,55,0.07)":WH):WH,
+            border:"1.5px solid "+(chosen?(isC?GRN:isP?RED:BR):BR),
+            color:chosen?(isC?GRN:isP?RED:BLK):BLK,
+            fontSize:15,fontWeight:chosen&&isC?600:400,cursor:chosen?"default":"pointer",boxShadow:SSH}},
+            (chosen&&isC?"✓ ":(chosen&&isP?"✕ ":" "))+opt);
+        }),
+        !chosen?h("button",{onClick:function(){pick("");},style:{fontSize:13,color:LT,background:"none",border:"none",cursor:"pointer",fontFamily:"inherit",textAlign:"center",padding:8}},"Non lo so"):null
+      ),
+      chosen?h("div",null,
+        h("div",{style:{background:chosen===q.answer?"rgba(52,199,89,0.08)":"rgba(206,43,55,0.07)",border:"1px solid "+(chosen===q.answer?"rgba(52,199,89,0.25)":"rgba(206,43,55,0.2)"),borderRadius:14,padding:"14px 20px",textAlign:"center",marginBottom:12}},
+          h("div",{style:{fontSize:15,fontWeight:600,color:chosen===q.answer?GRN:RED}},chosen===q.answer?"Corretto! 🎉":"Sbagliato."),
+          h("div",{style:{fontSize:13,color:GR,marginTop:4}},q.card.de+" = "+q.card.it)
+        ),
+        h("button",{onClick:gen,style:btnSt()},"Avanti")
+      ):null
+    ):null
+  );
 }
 
-// Open detail from itinerary
-function openFromPlan(pid) {
-  const p = places.find(x => x.id === pid);
-  if (!p) return;
-  showDetail(p);
+function KnowledgeScreen(){
+  var r1=useState("Grammatica"),sec=r1[0],setSec=r1[1];
+  var r2=useState(-1),open=r2[0],setOpen=r2[1];
+  var r3=useState("Tutti"),pf=r3[0],setPf=r3[1];
+  var secs=["Grammatica","Frasi"];
+  var pfCtx=["Tutti"];
+  for(var i=0;i<PHRASES.length;i++){if(pfCtx.indexOf(PHRASES[i].context)===-1)pfCtx.push(PHRASES[i].context);}
+  var fp=pf==="Tutti"?PHRASES:PHRASES.filter(function(p){return p.context===pf;});
+  return h("div",{style:{display:"flex",flexDirection:"column",height:"100%"}},
+    h("div",{style:{padding:"16px 20px 0",display:"flex",borderBottom:"1px solid "+BR}},
+      secs.map(function(s){return h("button",{key:s,onClick:function(){setSec(s);},style:{padding:"10px 20px",background:"none",fontFamily:"inherit",border:"none",borderBottom:"2px solid "+(sec===s?GREEN:"transparent"),color:sec===s?GREEN:GR,fontSize:14,fontWeight:sec===s?600:400,cursor:"pointer"}},s);})
+    ),
+    h("div",{style:{flex:1,overflowY:"auto",padding:"16px 20px 40px"}},
+      sec==="Grammatica"?h("div",null,
+        h("div",{style:{fontSize:13,color:GR,marginBottom:16}},GRAMMAR.length+" capitoli"),
+        GRAMMAR.map(function(g,i){
+          return h("div",{key:i,style:{background:WH,borderRadius:16,overflow:"hidden",boxShadow:SSH,marginBottom:10}},
+            h("div",{onClick:function(){setOpen(open===i?-1:i);},style:{padding:"16px 20px",display:"flex",justifyContent:"space-between",alignItems:"center",cursor:"pointer"}},
+              h("div",null,h("div",{style:{fontSize:15,fontWeight:500,color:BLK}},g.title),h("div",{style:{fontSize:12,color:GR,marginTop:2}},g.description)),
+              h("div",{style:{transform:open===i?"rotate(180deg)":"none",transition:"0.2s"}},IcoDn(LT))
+            ),
+            open===i?h("div",{style:{padding:"0 20px 20px",borderTop:"1px solid "+BR}},
+              h("table",{style:{width:"100%",borderCollapse:"collapse",marginTop:12}},
+                h("tbody",null,g.table.map(function(row,j){
+                  return h("tr",{key:j,style:{borderBottom:"1px solid "+BR}},
+                    h("td",{style:{padding:"8px 0",fontSize:13,color:GR}},row[0]),
+                    h("td",{style:{padding:"8px 0",fontSize:16,fontWeight:500,color:BLK,textAlign:"right"}},row[1]));
+                }))
+              ),
+              h("div",{style:{marginTop:12,padding:"10px 14px",background:GS,borderRadius:10,borderLeft:"3px solid "+GREEN}},
+                h("div",{style:{fontSize:12,color:GREEN}},"💡 "+g.tip)
+              )
+            ):null
+          );
+        })
+      ):null,
+      sec==="Frasi"?h("div",null,
+        h("div",{style:{display:"flex",gap:6,overflowX:"auto",paddingBottom:10,marginBottom:10}},
+          pfCtx.map(function(c){return h("button",{key:c,onClick:function(){setPf(c);},style:pillSt(pf===c)},c);})
+        ),
+        fp.map(function(p,i){
+          return h("div",{key:i,style:{background:WH,borderRadius:14,padding:"14px 16px",boxShadow:SSH,display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}},
+            h("div",null,h("div",{style:{fontSize:16,color:BLK}},p.it),h("div",{style:{fontSize:13,color:GR,marginTop:2}},p.de)),
+            h("button",{onClick:function(){speak(p.it);},style:{width:38,height:38,borderRadius:999,cursor:"pointer",border:"1.5px solid "+BR,background:WH,display:"flex",alignItems:"center",justifyContent:"center"}},IcoSpeak(GR))
+          );
+        })
+      ):null
+    )
+  );
 }
 
-// Plan / Day tabs
-let currentDay = 'fr';
-function showDay(day, btn) {
-  currentDay = day;
-  document.querySelectorAll('.day-tab').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderDay();
+function ProgressScreen(){
+  var stats=loadStats(),prog=loadProgress(),known=new Set(prog.known||[]);
+  var plan=loadPlan(),tod=stats[todayKey()]||{seen:0,correct:0};
+  var r1=useState(plan.dailyGoal),goal=r1[0],setGoal=r1[1];
+  var r2=useState(false),saved=r2[0],setSaved=r2[1];
+  var totalSeen=objSum(stats,"seen"),totalOk=objSum(stats,"correct");
+  var acc=totalSeen?Math.round(totalOk/totalSeen*100):0;
+  var kPct=Math.round(known.size/VOCAB.length*100);
+  var streak=0,d2=new Date();
+  while(true){var k=d2.toISOString().slice(0,10),ss=stats[k];if(ss&&ss.seen>=plan.dailyGoal){streak++;d2.setDate(d2.getDate()-1);}else break;}
+  var days=[];
+  for(var i=0;i<14;i++){var dd=new Date();dd.setDate(dd.getDate()-(13-i));var dk=dd.toISOString().slice(0,10);var lbl=i===13?"Oggi":dd.toLocaleDateString("it",{weekday:"short"}).slice(0,2);days.push({key:dk,lbl:lbl,data:stats[dk]||{seen:0,correct:0}});}
+  var maxS=plan.dailyGoal;
+  for(var i=0;i<days.length;i++){if(days[i].data.seen>maxS)maxS=days[i].data.seen;}
+  var catS={};
+  for(var i=0;i<VOCAB.length;i++){var v=VOCAB[i];if(!catS[v.cat])catS[v.cat]={t:0,k:0};catS[v.cat].t++;if(known.has(v.it))catS[v.cat].k++;}
+  function saveG(){savePlan(Object.assign({},plan,{dailyGoal:goal}));setSaved(true);setTimeout(function(){setSaved(false);},2000);}
+  var dots=[];
+  for(var ii=0;ii<30;ii++){
+    var dd2=new Date();dd2.setDate(dd2.getDate()-(29-ii));
+    var hk=dd2.toISOString().slice(0,10),hs=stats[hk];
+    var iv2=hs?Math.min(1,hs.seen/plan.dailyGoal):0;
+    var bg2=iv2===0?BR:iv2<0.5?GM:iv2<1?GREEN:GRN;
+    dots.push(h("div",{key:hk,style:{width:24,height:24,borderRadius:6,background:bg2,border:"2px solid "+(hk===todayKey()?GREEN:"transparent")}}));
+  }
+  return h("div",{style:{padding:"24px 20px 48px"}},
+    h("div",{style:{fontSize:26,fontWeight:300,fontFamily:SERIF,color:BLK,marginBottom:24}},"Progressi"),
+    h("div",{style:cardSt({display:"flex",alignItems:"center",gap:20,marginBottom:16})},
+      h("div",{style:{position:"relative",flexShrink:0}},
+        h(Ring,{pct:kPct,size:88,stroke:7}),
+        h("div",{style:{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center"}},
+          h("div",{style:{fontSize:20,fontWeight:600,color:BLK}},kPct+"%"))
+      ),
+      h("div",{style:{flex:1}},
+        h("div",{style:{fontSize:22,fontWeight:600,color:BLK}},known.size,h("span",{style:{fontSize:14,fontWeight:400,color:LT}}," / "+VOCAB.length)),
+        h("div",{style:{fontSize:13,color:GR,marginTop:2}},"Parole imparate"),
+        h("div",{style:{display:"flex",gap:20,marginTop:12}},
+          h("div",null,h("div",{style:{display:"flex",alignItems:"center",gap:4}},h("span",null,"🔥"),h("span",{style:{fontSize:18,fontWeight:600,color:BLK}},streak)),h("div",{style:{fontSize:11,color:LT}},"Serie")),
+          h("div",null,h("div",{style:{fontSize:18,fontWeight:600,color:BLK}},tod.seen),h("div",{style:{fontSize:11,color:LT}},"Oggi")),
+          h("div",null,h("div",{style:{fontSize:18,fontWeight:600,color:GRN}},acc+"%"),h("div",{style:{fontSize:11,color:LT}},"Precisione"))
+        )
+      )
+    ),
+    h("div",{style:cardSt({marginBottom:16})},h("div",{style:lblSt()},"ULTIMI 30 GIORNI"),h("div",{style:{display:"flex",flexWrap:"wrap",gap:5}},dots)),
+    h("div",{style:cardSt({marginBottom:16})},
+      h("div",{style:lblSt()},"ULTIMI 14 GIORNI"),
+      h("div",{style:{display:"flex",alignItems:"flex-end",gap:4,height:72}},
+        days.map(function(day){
+          var ht=Math.round(day.data.seen/maxS*68),gr=day.data.seen>=plan.dailyGoal,isT=day.key===todayKey();
+          return h("div",{key:day.key,style:{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3}},
+            h("div",{style:{width:"100%",display:"flex",flexDirection:"column",justifyContent:"flex-end",height:68}},
+              h("div",{style:{width:"100%",height:Math.max(ht,2),background:gr?GRN:isT?GREEN:BR,borderRadius:"3px 3px 0 0"}})),
+            h("div",{style:{fontSize:9,color:isT?GREEN:LT,fontFamily:"monospace"}},day.lbl));
+        })
+      )
+    ),
+    h("div",{style:cardSt({marginBottom:16})},
+      h("div",{style:lblSt()},"PER ARGOMENTO"),
+      Object.keys(catS).map(function(cat){
+        var ct=catS[cat],p=Math.round(ct.k/ct.t*100);
+        return h("div",{key:cat,style:{marginBottom:14}},
+          h("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:5}},
+            h("span",{style:{fontSize:13,color:BLK}},cat),h("span",{style:{fontSize:12,color:LT}},ct.k+"/"+ct.t)),
+          h("div",{style:{height:4,background:BR,borderRadius:2}},h("div",{style:{height:"100%",width:p+"%",background:p===100?GRN:GREEN,borderRadius:2}})));
+      })
+    ),
+    h("div",{style:cardSt(null)},
+      h("div",{style:lblSt()},"OBIETTIVO GIORNALIERO"),
+      h("div",{style:{display:"flex",gap:8,marginBottom:16}},
+        [5,10,15,20,30].map(function(n){return h("button",{key:n,onClick:function(){setGoal(n);},style:{flex:1,padding:"10px 4px",borderRadius:12,fontFamily:"inherit",background:goal===n?GREEN:"transparent",border:"1.5px solid "+(goal===n?GREEN:BR),color:goal===n?"#fff":GR,fontSize:14,fontWeight:goal===n?600:400,cursor:"pointer"}},n);})
+      ),
+      h("button",{onClick:saveG,style:btnSt()},saved?"✓ Salvato!":"Salva obiettivo")
+    )
+  );
 }
 
-function renderDay() {
-  const items = itinerary[currentDay];
-  const container = document.getElementById('day-content');
-  container.innerHTML = items.map(it => `
-    <div class="it-item">
-      <div class="it-ico">${it.ico}</div>
-      <div class="it-body">
-        <div class="it-time">${it.time}</div>
-        <div class="it-name">${it.name}</div>
-        <div class="it-desc">${it.desc}</div>
-        ${it.pid ? `<div class="it-link" onclick="openFromPlan(${it.pid})">Auf Karte zeigen ↗</div>` : ''}
-      </div>
-    </div>
-  `).join('');
+function ImpressumScreen(){
+  var year=new Date().getFullYear();
+  return h("div",{style:{padding:"32px 20px 48px"}},
+    h(FlagStripe,null),
+    h("div",{style:{fontSize:26,fontWeight:300,fontFamily:SERIF,color:BLK,marginBottom:4}},"Impressum"),
+    h("div",{style:{fontSize:13,color:GR,marginBottom:32}},"Angaben gemäß § 5 ECG"),
+    h("div",{style:cardSt({marginBottom:12})},
+      h("div",{style:lblSt()},"BETREIBER"),
+      h("div",{style:{fontSize:15,fontWeight:500,color:BLK,marginBottom:6}},"Clemens Schleinzer"),
+      h("div",{style:{fontSize:14,color:GR,lineHeight:1.7}},
+        "Enzersdorfer Straße 9/2/2",h("br",null),"2401 Fischamend",h("br",null),"Österreich"
+      ),
+      h("a",{href:"mailto:schleinzer@gmail.com",style:{display:"block",marginTop:10,fontSize:14,color:GREEN,textDecoration:"none"}},"schleinzer@gmail.com")
+    ),
+    h("div",{style:cardSt({marginBottom:12})},
+      h("div",{style:lblSt()},"ZWECK"),
+      h("div",{style:{fontSize:14,color:GR,lineHeight:1.7}},"Diese Web-App dient dem persönlichen Erlernen der italienischen Sprache. Sie ist eine nicht-kommerzielle Privatanwendung.")
+    ),
+    h("div",{style:cardSt({marginBottom:12})},
+      h("div",{style:lblSt()},"DATENSCHUTZ"),
+      h("div",{style:{fontSize:14,color:GR,lineHeight:1.7,marginBottom:8}},"Es werden keine personenbezogenen Daten erhoben, gespeichert oder an Dritte weitergegeben."),
+      h("div",{style:{fontSize:14,color:GR,lineHeight:1.7,marginBottom:8}},"Lernfortschritt, Statistiken und Einstellungen werden ausschließlich lokal im Browser gespeichert (localStorage). Diese Daten verlassen das Gerät nicht."),
+      h("div",{style:{fontSize:14,color:GR,lineHeight:1.7}},"Es werden keine Cookies gesetzt, kein Tracking durchgeführt und keine Analysedienste verwendet.")
+    ),
+    h("div",{style:{fontSize:12,color:LT,textAlign:"center",marginTop:20}},"Stand: "+year+" — Italiano Lern-App")
+  );
 }
 
-// Mehr screen
-function renderMehr() {
-  const catOrder = ['hotel','sightseeing','viewpoint','restaurant','cafe','bar','kultur','streetart','park'];
-  const container = document.getElementById('mehr-content');
-  container.innerHTML = catOrder.map(cat => {
-    const catPlaces = places.filter(p => p.cat === cat);
-    if (!catPlaces.length) return '';
-    const c = CATS[cat];
-    return `
-      <div class="mehr-cat-section">
-        <div class="mehr-cat-header">
-          <div class="mehr-cat-dot" style="background:${c.color}"></div>
-          <div class="mehr-cat-name">${c.emoji} ${c.label}</div>
-          <div class="mehr-cat-count">${catPlaces.length} Orte</div>
-        </div>
-        <div class="mehr-place-list">
-          ${catPlaces.map(p => `
-            <div class="mehr-place-item" onclick="showDetail(places.find(x=>x.id===${p.id}))">
-              <div class="mpi-emoji">${p.emoji||c.emoji}</div>
-              <div class="mpi-name">${p.name}</div>
-              <div class="mpi-arrow">›</div>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `;
-  }).join('');
+function TabBar(props){
+  var tab=props.tab,setTab=props.setTab;
+  var tabs=[
+    {id:"learn",label:"Lernen",icon:IcoLearn},
+    {id:"flash",label:"Flashcards",icon:IcoFlash},
+    {id:"quiz",label:"Quiz",icon:IcoQuiz},
+    {id:"know",label:"Wissen",icon:IcoKnow},
+    {id:"prog",label:"Fortschritt",icon:IcoProg},
+  ];
+  return h("div",{style:{display:"flex",background:WH,borderTop:"1px solid "+BR,paddingBottom:"env(safe-area-inset-bottom)",flexShrink:0}},
+    tabs.map(function(t){
+      var active=tab===t.id,col=active?GREEN:LT;
+      return h("button",{key:t.id,onClick:function(){setTab(t.id);},style:{flex:1,padding:"10px 0 12px",background:"none",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:3,fontFamily:"inherit"}},
+        t.icon(col),h("span",{style:{fontSize:9,fontWeight:active?600:400,color:col}},t.label)
+      );
+    }),
+    h("button",{onClick:function(){setTab("impressum");},style:{flex:1,padding:"10px 0 12px",background:"none",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:4,fontFamily:"inherit"}},
+      h("span",{style:{fontSize:16,lineHeight:1,color:tab==="impressum"?GREEN:LT,fontWeight:tab==="impressum"?600:400}},"§"),
+      h("span",{style:{fontSize:9,color:tab==="impressum"?GREEN:LT,fontWeight:tab==="impressum"?600:400}},"Impressum")
+    )
+  );
 }
 
-// Init
-renderDay();
-renderMehr();
+function App(){
+  var r1=useState("learn"),tab=r1[0],setTab=r1[1];
+  return h("div",{style:{display:"flex",flexDirection:"column",height:"100dvh",maxWidth:480,margin:"0 auto",background:BG,overflow:"hidden"}},
+    h("div",{style:{height:"env(safe-area-inset-top)",background:WH,flexShrink:0}}),
+    h("div",{style:{flex:1,overflowY:"auto"}},
+      tab==="learn"?h(LearnScreen,{onGo:setTab}):null,
+      tab==="flash"?h(FlashScreen,null):null,
+      tab==="quiz"?h(QuizScreen,null):null,
+      tab==="know"?h(KnowledgeScreen,null):null,
+      tab==="prog"?h(ProgressScreen,null):null,
+      tab==="impressum"?h(ImpressumScreen,null):null
+    ),
+    h(TabBar,{tab:tab,setTab:setTab})
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(h(App,null));
 </script>
 </body>
 </html>
