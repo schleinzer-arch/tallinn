@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Tallinn · September</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream:#f4ede0; --cream-dark:#e8ddc8; --parchment:#faf6ee;
+  --navy:#1a2744; --navy-faint:rgba(26,39,68,0.07); --navy-faint2:rgba(26,39,68,0.13);
+  --gold:#b8892e; --gold-light:#d4a84b; --gold-pale:rgba(184,137,46,0.13);
+  --text-dim:rgba(26,39,68,0.55); --divider:rgba(26,39,68,0.1);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;background:#ddd4be;}
+body{font-family:'EB Garamond',Georgia,serif;color:var(--navy);}
+#app{max-width:480px;margin:0 auto;height:100vh;display:flex;flex-direction:column;background:var(--parchment);position:relative;overflow:hidden;}
+.screen{flex:1;overflow:hidden;display:none;flex-direction:column;}
+.screen.active{display:flex;}
+
+/* ── HOME ── */
+#s-home{background:var(--parchment);overflow-y:auto;}
+.home-cover{padding:48px 26px 24px;background:linear-gradient(175deg,#faf6ee 0%,#f4ede0 60%,#ede0c8 100%);position:relative;border-bottom:1px solid var(--divider);}
+.home-cover::after{content:'';position:absolute;bottom:0;left:0;right:0;height:40px;background:linear-gradient(0deg,rgba(244,237,224,0.5),transparent);}
+.h-eye{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+.h-ttl{font-family:'Playfair Display',serif;font-size:52px;line-height:.95;font-weight:700;color:var(--navy);}
+.h-sub{font-family:'Playfair Display',serif;font-size:15px;color:var(--gold);letter-spacing:3px;text-transform:uppercase;font-weight:400;margin-top:6px;margin-bottom:20px;}
+.h-div{width:32px;height:1px;background:var(--gold);opacity:.6;margin-bottom:14px;}
+.h-tagline{font-size:14px;color:var(--text-dim);font-style:italic;}
+.home-section{padding:20px 22px;border-bottom:1px solid var(--divider);}
+.home-section:last-child{border-bottom:none;padding-bottom:100px;}
+.hs-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
+.flight-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;padding:12px;background:var(--navy-faint);border-radius:8px;border:1px solid var(--navy-faint2);}
+.fr-icon{font-size:18px;flex-shrink:0;}
+.fr-body{flex:1;}
+.fr-ttl{font-family:'Playfair Display',serif;font-size:14px;color:var(--navy);}
+.fr-sub{font-size:11px;color:var(--text-dim);font-style:italic;}
+.fr-badge{font-size:10px;background:var(--navy);color:var(--cream);padding:2px 8px;border-radius:20px;white-space:nowrap;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.info-card{background:var(--navy-faint);border:1px solid var(--navy-faint2);border-radius:8px;padding:12px;}
+.ic-l{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:4px;}
+.ic-v{font-size:13px;color:var(--navy);}
+.nav-hint{display:flex;gap:8px;flex-wrap:wrap;}
+.nh{display:flex;align-items:center;gap:6px;background:var(--navy-faint);border:1px solid var(--navy-faint2);border-radius:20px;padding:8px 14px;cursor:pointer;transition:background .2s;}
+.nh:hover{background:var(--navy-faint2);}
+.nh-icon{font-size:16px;}
+.nh-text{font-size:13px;color:var(--navy);}
+
+/* ── PLAN ── */
+#s-plan{background:var(--parchment);}
+.plan-header{padding:34px 22px 12px;border-bottom:1px solid var(--divider);}
+.plan-header-eye{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:3px;}
+.plan-header-title{font-family:'Playfair Display',serif;font-size:24px;font-weight:400;color:var(--navy);}
+.day-tabs{display:flex;border-bottom:1px solid var(--divider);background:var(--parchment);}
+.day-tab{flex:1;padding:10px 0;text-align:center;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);border-bottom:2px solid transparent;cursor:pointer;background:transparent;border-top:none;border-left:none;border-right:none;font-family:'EB Garamond',serif;transition:color .2s;}
+.day-tab.active{color:var(--navy);border-bottom-color:var(--gold);}
+.day-content{flex:1;overflow-y:auto;padding:14px 22px 90px;scrollbar-width:none;}
+.day-content::-webkit-scrollbar{display:none;}
+.it-item{display:flex;gap:12px;margin-bottom:18px;position:relative;}
+.it-item::before{content:'';position:absolute;left:13px;top:30px;bottom:-18px;width:1px;background:linear-gradient(180deg,rgba(184,137,46,0.35) 0%,rgba(184,137,46,0.05) 100%);}
+.it-item:last-child::before{display:none;}
+.it-ico{width:28px;height:28px;border-radius:50%;background:var(--gold-pale);border:1px solid rgba(184,137,46,0.35);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;position:relative;z-index:1;}
+.it-body{flex:1;padding-top:3px;}
+.it-time{font-size:9px;color:var(--gold);letter-spacing:1px;margin-bottom:2px;}
+.it-name{font-family:'Playfair Display',serif;font-size:14px;color:var(--navy);margin-bottom:2px;}
+.it-desc{font-size:11px;color:var(--text-dim);line-height:1.5;font-style:italic;}
+.it-link{font-size:10px;color:var(--gold);margin-top:3px;cursor:pointer;text-decoration:underline;text-underline-offset:2px;}
+
+/* ── MAP ── */
+#s-map{position:relative;}
+#map-filters{padding:8px 12px;background:var(--parchment);border-bottom:1px solid var(--divider);display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;flex-shrink:0;}
+#map-filters::-webkit-scrollbar{display:none;}
+.filter-btn{flex-shrink:0;padding:5px 11px;border:1px solid var(--navy-faint2);background:transparent;color:var(--text-dim);font-family:'EB Garamond',serif;font-size:11px;letter-spacing:1px;border-radius:20px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.filter-btn.active{color:var(--navy);border-color:var(--navy);background:var(--navy-faint);}
+#map{flex:1;}
+
+/* ── DETAIL PANEL ── */
+#detail-overlay{position:fixed;inset:0;background:rgba(26,39,68,0.3);opacity:0;pointer-events:none;transition:opacity .3s;z-index:500;}
+#detail-overlay.open{opacity:1;pointer-events:all;}
+#detail-panel{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);width:100%;max-width:480px;background:var(--parchment);border-radius:20px 20px 0 0;box-shadow:0 -8px 40px rgba(26,39,68,0.18);transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:501;padding:0 0 90px;}
+#detail-panel.open{transform:translateX(-50%) translateY(0);}
+.dp-handle{width:36px;height:4px;background:rgba(26,39,68,0.18);border-radius:2px;margin:10px auto 16px;}
+.dp-cat-badge{display:inline-block;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--cream);padding:3px 10px;border-radius:2px;margin:0 20px 8px;font-weight:600;}
+.dp-title{font-family:'Playfair Display',serif;font-size:22px;color:var(--navy);padding:0 20px 6px;font-weight:600;line-height:1.2;}
+.dp-day{display:inline-flex;align-items:center;gap:4px;background:var(--gold-pale);border:1px solid rgba(184,137,46,0.25);border-radius:20px;padding:4px 12px;font-size:10px;color:var(--gold);margin:0 20px 12px;letter-spacing:1px;}
+.dp-desc{font-size:13px;color:var(--text-dim);line-height:1.7;font-style:italic;margin:0 20px 16px;border-left:2px solid rgba(184,137,46,0.4);padding-left:12px;}
+.dp-maps{display:block;margin:0 20px;padding:12px;background:transparent;border:1px solid rgba(26,39,68,0.28);color:var(--navy);font-family:'EB Garamond',serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;border-radius:4px;text-align:center;text-decoration:none;transition:background .2s;}
+.dp-maps:hover{background:var(--navy-faint);}
+.dp-close{position:absolute;top:14px;right:18px;background:var(--navy-faint);border:none;border-radius:50%;width:30px;height:30px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-dim);}
+
+/* ── MEHR ── */
+#s-mehr{overflow-y:auto;padding:0 0 90px;}
+.mehr-header{padding:34px 22px 16px;border-bottom:1px solid var(--divider);}
+.mehr-header-eye{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:3px;}
+.mehr-header-title{font-family:'Playfair Display',serif;font-size:24px;font-weight:400;color:var(--navy);}
+.mehr-cat-section{border-bottom:1px solid var(--divider);}
+.mehr-cat-header{display:flex;align-items:center;gap:10px;padding:14px 22px 10px;cursor:pointer;}
+.mehr-cat-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.mehr-cat-name{font-family:'Playfair Display',serif;font-size:16px;color:var(--navy);}
+.mehr-cat-count{font-size:11px;color:var(--text-dim);margin-left:auto;}
+.mehr-place-list{padding:0 22px 12px;}
+.mehr-place-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--navy-faint);cursor:pointer;transition:background .15s;}
+.mehr-place-item:last-child{border-bottom:none;}
+.mpi-emoji{font-size:16px;width:24px;text-align:center;flex-shrink:0;}
+.mpi-name{font-size:13px;color:var(--navy);flex:1;}
+.mpi-arrow{font-size:12px;color:var(--text-dim);}
+.mehr-place-item:hover .mpi-name{color:var(--gold);}
+
+/* ── BOTTOM NAV ── */
+#bottom-nav{display:flex;border-top:1px solid var(--divider);background:rgba(250,246,238,0.97);backdrop-filter:blur(10px);flex-shrink:0;}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 0 12px;background:transparent;border:none;cursor:pointer;opacity:.32;transition:opacity .2s;font-family:'EB Garamond',serif;}
+.nav-btn.active{opacity:1;}
+.nav-btn:hover{opacity:.65;}
+.nb-icon{font-size:20px;}
+.nb-label{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--navy);}
+.nav-btn.active .nb-label{color:var(--gold);}
+
+/* ── MAP PIN CSS ── */
+.custom-marker{background:transparent!important;border:none!important;}
+.pin{width:30px;height:30px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,0.3);border:2px solid rgba(255,255,255,0.8);}
+.pin span{transform:rotate(45deg);display:block;font-size:13px;}
+.pin-home{border:3px solid gold!important;box-shadow:0 3px 12px rgba(0,0,0,0.4)!important;}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ── HOME ── -->
+<div class="screen active" id="s-home">
+  <div class="home-cover">
+    <div class="h-eye">Reiseunterlagen · 2025</div>
+    <div class="h-ttl">Tallinn</div>
+    <div class="h-sub">Estland</div>
+    <div class="h-div"></div>
+    <div class="h-tagline">Mittelalter trifft nordische Moderne.</div>
+  </div>
+  <div class="home-section">
+    <div class="hs-label">Flugdetails</div>
+    <div class="flight-row">
+      <div class="fr-icon">✈️</div>
+      <div class="fr-body">
+        <div class="fr-ttl">Wien → Tallinn</div>
+        <div class="fr-sub">Fr 04.09. · BT 832 · 08:30–11:50 · Direktflug</div>
+      </div>
+      <div class="fr-badge">Hinflug</div>
+    </div>
+    <div class="flight-row">
+      <div class="fr-icon">✈️</div>
+      <div class="fr-body">
+        <div class="fr-ttl">Tallinn → Riga → Wien</div>
+        <div class="fr-sub">So 06.09. · BT 314+273 · 15:15–19:40 · via Riga</div>
+      </div>
+      <div class="fr-badge">Rückflug</div>
+    </div>
+  </div>
+  <div class="home-section">
+    <div class="hs-label">Stadt-Info</div>
+    <div class="info-grid">
+      <div class="info-card"><div class="ic-l">Land</div><div class="ic-v">Estland</div></div>
+      <div class="info-card"><div class="ic-l">Währung</div><div class="ic-v">Euro (€)</div></div>
+      <div class="info-card"><div class="ic-l">Einwohner</div><div class="ic-v">ca. 460.000</div></div>
+      <div class="info-card"><div class="ic-l">Zeitzone</div><div class="ic-v">Wien +1h</div></div>
+      <div class="info-card"><div class="ic-l">Sprache</div><div class="ic-v">Estnisch</div></div>
+      <div class="info-card"><div class="ic-l">Transfer</div><div class="ic-v">Bolt · 15 Min</div></div>
+    </div>
+  </div>
+  <div class="home-section">
+    <div class="hs-label">Navigation</div>
+    <div class="nav-hint">
+      <div class="nh" onclick="nav('plan')"><span class="nh-icon">📅</span><span class="nh-text">Reiseplan</span></div>
+      <div class="nh" onclick="nav('map')"><span class="nh-icon">📍</span><span class="nh-text">Karte</span></div>
+      <div class="nh" onclick="nav('mehr')"><span class="nh-icon">☰</span><span class="nh-text">Alle Orte</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── PLAN ── -->
+<div class="screen" id="s-plan">
+  <div class="plan-header">
+    <div class="plan-header-eye">Das Wochenende</div>
+    <div class="plan-header-title">Reiseplan</div>
+  </div>
+  <div class="day-tabs">
+    <button class="day-tab active" onclick="showDay('fr',this)">Freitag</button>
+    <button class="day-tab" onclick="showDay('sa',this)">Samstag</button>
+    <button class="day-tab" onclick="showDay('so',this)">Sonntag</button>
+  </div>
+  <div class="day-content" id="day-content"></div>
+</div>
+
+<!-- ── MAP ── -->
+<div class="screen" id="s-map">
+  <div id="map-filters">
+    <button class="filter-btn active" onclick="filterMap('all',this)">Alle</button>
+    <button class="filter-btn" onclick="filterMap('hotel',this)">🏨 Hotels</button>
+    <button class="filter-btn" onclick="filterMap('sightseeing',this)">⭐ Sightseeing</button>
+    <button class="filter-btn" onclick="filterMap('viewpoint',this)">🔭 Aussicht</button>
+    <button class="filter-btn" onclick="filterMap('restaurant',this)">🍽️ Essen</button>
+    <button class="filter-btn" onclick="filterMap('cafe',this)">☕ Cafés</button>
+    <button class="filter-btn" onclick="filterMap('bar',this)">🍸 Bars</button>
+    <button class="filter-btn" onclick="filterMap('kultur',this)">🎭 Kultur</button>
+    <button class="filter-btn" onclick="filterMap('streetart',this)">🎨 Street Art</button>
+    <button class="filter-btn" onclick="filterMap('park',this)">🌿 Parks</button>
+  </div>
+  <div id="map"></div>
+</div>
+
+<!-- ── MEHR ── -->
+<div class="screen" id="s-mehr">
+  <div class="mehr-header">
+    <div class="mehr-header-eye">Entdecken</div>
+    <div class="mehr-header-title">Alle Orte</div>
+  </div>
+  <div id="mehr-content"></div>
+</div>
+
+<!-- ── BOTTOM NAV ── -->
+<nav id="bottom-nav">
+  <button class="nav-btn active" id="btn-home" onclick="nav('home')">
+    <span class="nb-icon">🏠</span><span class="nb-label">Home</span>
+  </button>
+  <button class="nav-btn" id="btn-plan" onclick="nav('plan')">
+    <span class="nb-icon">📅</span><span class="nb-label">Plan</span>
+  </button>
+  <button class="nav-btn" id="btn-map" onclick="nav('map')">
+    <span class="nb-icon">📍</span><span class="nb-label">Karte</span>
+  </button>
+  <button class="nav-btn" id="btn-mehr" onclick="nav('mehr')">
+    <span class="nb-icon">☰</span><span class="nb-label">Mehr</span>
+  </button>
+</nav>
+
+<!-- ── DETAIL PANEL ── -->
+<div id="detail-overlay" onclick="closeDetail()"></div>
+<div id="detail-panel">
+  <div class="dp-handle"></div>
+  <button class="dp-close" onclick="closeDetail()">✕</button>
+  <div id="dp-cat" class="dp-cat-badge"></div>
+  <div id="dp-title" class="dp-title"></div>
+  <div id="dp-day-wrap" class="dp-day" style="display:none;">
+    <span>📅</span><span id="dp-day"></span>
+  </div>
+  <div id="dp-desc" class="dp-desc"></div>
+  <a id="dp-maps" class="dp-maps" href="#" target="_blank">In Google Maps öffnen ↗</a>
+</div>
+
+</div><!-- /#app -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────
+const CATS = {
+  hotel:       { label:'Hotel',        color:'#1e4d8c', emoji:'🏨' },
+  sightseeing: { label:'Sightseeing',  color:'#b8892e', emoji:'⭐' },
+  viewpoint:   { label:'Aussichtspunkt',color:'#006b8e',emoji:'🔭' },
+  restaurant:  { label:'Restaurant',   color:'#c0622a', emoji:'🍽️' },
+  cafe:        { label:'Café',         color:'#7a5c10', emoji:'☕' },
+  bar:         { label:'Bar',          color:'#5b2d8e', emoji:'🍸' },
+  kultur:      { label:'Kultur/Museum',color:'#1a7a5e', emoji:'🎭' },
+  streetart:   { label:'Street Art',   color:'#7000b4', emoji:'🎨' },
+  park:        { label:'Park',         color:'#2d7a2d', emoji:'🌿' },
+};
+
+const places = [
+  // HOTELS
+  {id:1,name:'Nunne Boutique Hotel',cat:'hotel',lat:59.4363,lng:24.7374,emoji:'🏨',desc:'Modern renoviert, ruhige Ecke der Altstadt, gute Schalldämmung. 3–5 Min zu Fuß ins Zentrum. Weniger Bars direkt vor der Tür.'},
+  {id:2,name:'Hotel Regent Tallinn',cat:'hotel',lat:59.4370,lng:24.7496,emoji:'🏨',desc:'Sehr atmosphärisch & elegant. Kleine, exklusive Boutiquehotel-Stimmung. Ruhiger Altstadtrand, hochwertige Ausstattung.'},
+  {id:3,name:'Swissötel Tallinn',cat:'hotel',lat:59.4361,lng:24.7537,emoji:'🏨',desc:'Beste Schalldämmung, große moderne Zimmer, sehr ruhig. Komfortables Businesshotel-Niveau. Toller Blick über Tallinn.'},
+  // SIGHTSEEING
+  {id:4,name:'Tallinner Altstadt (UNESCO)',cat:'sightseeing',lat:59.4370,lng:24.7452,emoji:'🏰',desc:'Mittelalterliche Gassen, Türme, Innenhöfe und Kopfsteinpflaster — das Herz der Stadt. UNESCO-Weltkulturerbe.',day:'Freitag'},
+  {id:5,name:'Toompea Hügel',cat:'sightseeing',lat:59.4360,lng:24.7390,emoji:'⛪',desc:'Historische Oberstadt mit Schloss und Parlament. Die bekanntesten Panoramablicke über Tallinn mit roten Dächern.',day:'Freitag'},
+  {id:6,name:'Alexander-Newski-Kathedrale',cat:'sightseeing',lat:59.4363,lng:24.7393,emoji:'⛪',desc:'Eindrucksvolle orthodoxe Kathedrale mit russischem Einfluss direkt auf Toompea. Eines der markantesten Gebäude der Stadt.'},
+  {id:7,name:'Rathausplatz (Raekoja plats)',cat:'sightseeing',lat:59.4371,lng:24.7455,emoji:'🏛️',desc:'Historischer Mittelpunkt Tallinns mit Cafés, Märkten und ikonischer Atmosphäre. Town Hall Tower & Old Thomas.',day:'Freitag'},
+  {id:8,name:'Katharinenpassage',cat:'sightseeing',lat:59.4376,lng:24.7451,emoji:'🚪',desc:'Eine der fotogensten Gassen Tallinns mit Werkstätten, kleinen Boutiquen und mittelalterlichem Flair.',day:'Freitag'},
+  {id:9,name:'Telliskivi Creative City',cat:'sightseeing',lat:59.4399,lng:24.7267,emoji:'🏭',desc:'Kreativviertel voller Street Art, Designshops, Cafés, Bars und nordischem Industriecharme.',day:'Samstag'},
+  {id:10,name:'Noblessner Quarter',cat:'sightseeing',lat:59.4495,lng:24.7488,emoji:'⚓',desc:'Stylisches Hafenviertel mit Restaurants, Yachthafen, Design und entspanntem skandinavischem Flair.',day:'Samstag'},
+  {id:11,name:'KGB Museum & Hotel Viru',cat:'sightseeing',lat:59.4367,lng:24.7507,emoji:'🕵️',desc:'Spannender Einblick in Sowjetzeit, Überwachung und die Geschichte Estlands im berühmten Hotel Viru.',day:'Samstag'},
+  {id:12,name:'Balti Jaam Markt',cat:'sightseeing',lat:59.4413,lng:24.7360,emoji:'🛍️',desc:'Moderner Markt mit frischen Produkten, Street Food, Designshops und entspannter Atmosphäre.',day:'Sonntag'},
+  {id:13,name:'Lennusadam / Seaplane Harbour',cat:'sightseeing',lat:59.4506,lng:24.7470,emoji:'✈️',desc:'Beeindruckendes Seefahrtsmuseum mit U-Boot, historischen Schiffen und interaktiven Ausstellungen.',day:'Samstag'},
+  {id:14,name:'Linnahall',cat:'sightseeing',lat:59.4497,lng:24.7403,emoji:'🏗️',desc:'Monumentale Sowjet-Brutalistarchitektur direkt am Hafen. Verlassen, faszinierend, fotografisch unglaublich.'},
+  {id:15,name:'Meeresfestung Patarei',cat:'sightseeing',lat:59.4508,lng:24.7435,emoji:'🏰',desc:'Historische Meeresfestung aus dem 19. Jahrhundert. Heute Kulturzentrum mit interessanter Geschichte.'},
+  {id:16,name:'Kalamaja Holzviertel',cat:'sightseeing',lat:59.4423,lng:24.7299,emoji:'🪵',desc:'Charmantes Viertel mit bunten Holzhäusern, kaum Touristen. Authentisches Tallinn abseits der Altstadt.'},
+  {id:17,name:'Kadriorg Park & Schloss',cat:'sightseeing',lat:59.4369,lng:24.7960,emoji:'🌸',desc:'Wunderschöner Park mit barockem Schloss, Kunstmuseum und ruhigen Wegen zum Entspannen.',day:'Sonntag'},
+  {id:18,name:'Kiek in de Kök',cat:'sightseeing',lat:59.4360,lng:24.7406,emoji:'🏰',desc:'Historisches Festungsmuseum in einem mittelalterlichen Verteidigungsturm. Einzigartige Ausstellung über Tallinn.'},
+  {id:19,name:'Lehmpforte (Lühike jalg)',cat:'sightseeing',lat:59.4365,lng:24.7403,emoji:'🚪',desc:'Historische Lehmstraße und Torpassage zwischen Ober- und Unterstadt. Wunderschön und fotogen.'},
+  {id:20,name:'Suur Tõll (Eisbrecher)',cat:'sightseeing',lat:59.4511,lng:24.7476,emoji:'🚢',desc:'Historischer Eisbrecher aus dem frühen 20. Jh., heute Museumsschiff am Lennusadam.'},
+  // VIEWPOINTS
+  {id:21,name:'Patkuli Aussichtsplattform',cat:'viewpoint',lat:59.4382,lng:24.7376,emoji:'🔭',desc:'Der wohl schönste Blick über die Altstadt — besonders früh morgens, wenn die Stadt noch ganz für sich ist.',day:'Freitag'},
+  {id:22,name:'Piiskopi Aussichtsplattform',cat:'viewpoint',lat:59.4378,lng:24.7431,emoji:'🔭',desc:'Weiterer toller Aussichtspunkt über die Altstadt, etwas weniger bekannt als Patkuli.'},
+  {id:23,name:'Fotografiska Rooftop',cat:'viewpoint',lat:59.4415,lng:24.7584,emoji:'🔭',desc:'Viele gehen nur ins Museum — die Rooftop-Bar ist der eigentliche Geheimtipp. Perfekter Ausblick, entspannte Atmosphäre.',day:'Samstag'},
+  {id:24,name:'Kruiisiterminali Katusepromenad',cat:'viewpoint',lat:59.4527,lng:24.7396,emoji:'🔭',desc:'Dachpromenade des Kreuzfahrtterminals. Toller Blick auf den Hafen und die Altstadt.'},
+  {id:25,name:'Kohtuotsa Viewpoint',cat:'viewpoint',lat:59.4369,lng:24.7388,emoji:'🔭',desc:'Klassischer Toompea-Aussichtspunkt mit ikonischem Blick auf die roten Dächer der Altstadt.'},
+  {id:26,name:'Majaka Viewpoint',cat:'viewpoint',lat:59.4194,lng:24.7822,emoji:'🔭',desc:'Weniger bekannter Aussichtspunkt etwas außerhalb des Zentrums. Ruhig und besonders.'},
+  // RESTAURANTS
+  {id:27,name:'Rataskaevu 16',cat:'restaurant',lat:59.4377,lng:24.7447,emoji:'🍽️',desc:'Moderne estnische Küche mitten in der Altstadt. Ehrliche Zutaten, schönes Design, lange Abende.',day:'Freitag'},
+  {id:28,name:'F-Hoone',cat:'restaurant',lat:59.4397,lng:24.7264,emoji:'🍽️',desc:'Legendäres Restaurant in einer ehemaligen Industriehalle in Telliskivi. Mittagessen am Samstag perfekt.',day:'Samstag'},
+  {id:29,name:'NOA Restaurant',cat:'restaurant',lat:59.4489,lng:24.7906,emoji:'🍽️',desc:'Dinner direkt am Wasser mit Blick auf die Altstadt. Gehobene Küche, nordischer Stil.',day:'Samstag'},
+  {id:30,name:'Lore Bistro',cat:'restaurant',lat:59.4484,lng:24.7492,emoji:'🍽️',desc:'In Noblessner — die ganze Umgebung fühlt sich wie ein kleines Stück Kopenhagen an. Nordisches Flair am Wasser.'},
+  {id:31,name:'Lee Brasserie',cat:'restaurant',lat:59.4374,lng:24.7452,emoji:'🍽️',desc:'Elegante Brasserie in der Altstadt. €€€ · Fine Dining-Niveau, besondere Abende.'},
+  {id:32,name:'Pegasus',cat:'restaurant',lat:59.4371,lng:24.7455,emoji:'🍽️',desc:'Klassiker in der Altstadt mit estnischer und europäischer Küche. Verlässlich gut.'},
+  {id:33,name:'Olde Hanse',cat:'restaurant',lat:59.4371,lng:24.7457,emoji:'🍽️',desc:'Mittelalterliches Restaurant in der Altstadt — touristisch, aber unterhaltsam und tatsächlich gut.'},
+  {id:34,name:'Austerium Oyster Bar',cat:'restaurant',lat:59.4376,lng:24.7480,emoji:'🦪',desc:'Austernbar & Wine mit 5★ Rating. Besonders und erinnerungswürdig. €30–70.',day:'Samstag'},
+  // CAFÉS
+  {id:35,name:'RØST Bakery',cat:'cafe',lat:59.4376,lng:24.7431,emoji:'☕',desc:'Nordische Bäckerei mit fantastischem Kaffee und Zimtschnecken. Erster Stopp nach dem Hotel.',day:'Freitag'},
+  {id:36,name:'Maiasmokk Café',cat:'cafe',lat:59.4375,lng:24.7457,emoji:'☕',desc:'Ältestes Café Tallinns (seit 1864). Marzipan und historische Atmosphäre. Muss man gesehen haben.'},
+  {id:37,name:'Pierre Chocolaterie',cat:'cafe',lat:59.4374,lng:24.7455,emoji:'🍫',desc:'Handgemachte Schokolade und Pralinés. Perfekt als Mitbringsel.'},
+  {id:38,name:'Fika',cat:'cafe',lat:59.4373,lng:24.7449,emoji:'☕',desc:'Skandinavisches Café-Konzept. Entspannt, modern, guter Kaffee.'},
+  {id:39,name:'Reval Cafe',cat:'cafe',lat:59.4374,lng:24.7454,emoji:'☕',desc:'Sonntagsbrunch-Tipp. Gemütlich, estnisch, entspannte Atmosphäre.'},
+  // BARS
+  {id:40,name:'Whisper Sister',cat:'bar',lat:59.4375,lng:24.7437,emoji:'🍸',desc:'Hinter einer unscheinbaren Tür: eine der atmosphärischsten Bars Tallinns. Kerzenlicht, Jazz, ehrliche Drinks.',day:'Freitag'},
+  {id:41,name:'Botaanik',cat:'bar',lat:59.4376,lng:24.7444,emoji:'🌿',desc:'Botanical Bar — Pflanzen, Aromen, nordische Eleganz. Natur trifft Mixology. Signature: Herbal Gin Fizz.'},
+  {id:42,name:'Sigmund Freud Bar',cat:'bar',lat:59.4374,lng:24.7458,emoji:'🧠',desc:'Verspielt, exzentrisch, voller Charakter. Cocktails mit Geschichte und einem Hauch Ironie.',day:'Freitag'},
+  {id:43,name:'Põhjala Tap Room',cat:'bar',lat:59.4400,lng:24.7268,emoji:'🍺',desc:'Industrial Chic in Telliskivi. Großartiges Craft Beer, lässige Stimmung, oft Live-Musik.',day:'Samstag'},
+  {id:44,name:'Koht',cat:'bar',lat:59.4375,lng:24.7461,emoji:'🍺',desc:'Klein, herzlich, voller Locals. Beste Auswahl estnischer Craft Biere. Ein echtes Tallinn.'},
+  {id:45,name:'Möku',cat:'bar',lat:59.4395,lng:24.7265,emoji:'🍸',desc:'Bar in Telliskivi. €1–10. Entspannt, lokal, authentisch.'},
+  // KULTUR
+  {id:46,name:'Fotografiska Tallinn',cat:'kultur',lat:59.4415,lng:24.7584,emoji:'📸',desc:'Modernes Fotografie-Museum mit wechselnden Ausstellungen. Rooftop-Bar mit Blick über die Stadt.',day:'Samstag'},
+  {id:47,name:'Kumu Art Museum',cat:'kultur',lat:59.4373,lng:24.8011,emoji:'🎨',desc:'Größtes Kunstmuseum der baltischen Staaten, direkt neben Kadriorg. Weltklasse-Niveau, überraschend wenig bekannt.',day:'Sonntag'},
+  // STREET ART
+  {id:48,name:'Street Art "Koit ja Hämarik"',cat:'streetart',lat:59.4448,lng:24.7297,emoji:'🎨',desc:'Bekanntes Mural in Kalamaja — Gesichter die einander anblicken. Eines der ikonischsten Street-Art-Werke Tallinns.'},
+  {id:49,name:'Street Art "Naine"',cat:'streetart',lat:59.4444,lng:24.7302,emoji:'🎨',desc:'Eindrucksvolles Frauenporträt als Wandbild. 5★ Rating.'},
+  {id:50,name:'Street Art "Mundra"',cat:'streetart',lat:59.4445,lng:24.7305,emoji:'🎨',desc:'Weiteres beeindruckendes Mural in der Kalamaja-Gegend.'},
+  {id:51,name:'Street Art Axolot',cat:'streetart',lat:59.4441,lng:24.7309,emoji:'🎨',desc:'Street Art mit Axolot und blauem Hirsch — farbenfroh und kurios.'},
+  {id:52,name:'Street Art Tondi',cat:'streetart',lat:59.4068,lng:24.7201,emoji:'🎨',desc:'Etwas außerhalb: Street Art Viertel Tondi. Für Street-Art-Enthusiasten eine Reise wert.'},
+  // PARKS
+  {id:53,name:'Dompark',cat:'park',lat:59.4371,lng:24.7397,emoji:'🌿',desc:'Grüne Oase direkt auf Toompea. Ruhige Spazierwege zwischen historischen Gebäuden.'},
+  {id:54,name:'Hirschpark',cat:'park',lat:59.4441,lng:24.7895,emoji:'🦌',desc:'Park nahe Kadriorg — ruhig, weitläufig, schöne Wege.'},
+  {id:55,name:'Tallinn Old Town Park',cat:'park',lat:59.4389,lng:24.7400,emoji:'🌿',desc:'Kleiner Park am Rand der Altstadt. Paks Margarita — entspannte Atmosphäre.'},
+];
+
+const itinerary = {
+  fr: [
+    {time:'08:30',ico:'✈️',name:'Abflug Wien Schwechat',desc:'airBaltic BT 832 · Direktflug · Nur Handgepäck'},
+    {time:'11:50',ico:'🛬',name:'Ankunft Tallinn Lennart Meri',desc:'Transfer per Bolt ins Hotel · ca. 10–15 Minuten'},
+    {time:'12:30',ico:'🏨',name:'Einchecken & durchatmen',desc:'Kurze Ruhepause — Tallinn wartet'},
+    {time:'13:30',ico:'🏰',name:'Erster Spaziergang',desc:'Viru Gate → Rathausplatz → Katharinenpassage → Toompea Hügel → Patkuli Aussichtspunkt',pid:4},
+    {time:'15:00',ico:'☕',name:'RØST Bakery',desc:'Nordische Bäckerei · Zimtschnecken & fantastischer Kaffee',pid:35},
+    {time:'16:00',ico:'🚶',name:'Altstadt erkunden',desc:'Treiben lassen — versteckte Höfe, Lehmpforte, Dompark'},
+    {time:'18:00',ico:'🔭',name:'Sonnenuntergang am Patkuli',desc:'Der schönste Blick über die Altstadt — früh sein!',pid:21},
+    {time:'19:30',ico:'🍽️',name:'Dinner: Rataskaevu 16',desc:'Moderne estnische Küche mitten in der Altstadt',pid:27},
+    {time:'21:30',ico:'🍸',name:'Whisper Sister',desc:'Hinter der unscheinbaren Tür klingeln — Kerzenlicht & Jazz',pid:40},
+  ],
+  sa: [
+    {time:'09:00',ico:'☕',name:'Frühstück & Kaffee',desc:'Langsam aufwachen — Tallinn ist morgens leise'},
+    {time:'10:00',ico:'🕵️',name:'KGB Museum & Hotel Viru',desc:'Führung durch Sowjetzeit, Überwachung und Kalten Krieg',pid:11},
+    {time:'12:30',ico:'🍽️',name:'Mittagessen: F-Hoone',desc:'Legendäres Restaurant in ehemaliger Industriehalle in Telliskivi',pid:28},
+    {time:'13:30',ico:'🏭',name:'Telliskivi Creative City',desc:'Street Art, Designshops, Cafés — kreatives Tallinn',pid:9},
+    {time:'15:00',ico:'🎨',name:'Street Art Kalamaja',desc:'Street Art Koit ja Hämarik, Naine und weitere Murals',pid:48},
+    {time:'16:00',ico:'⚓',name:'Spaziergang Noblessner',desc:'Am Wasser entlang — Architektur, maritime Stimmung',pid:10},
+    {time:'17:00',ico:'📸',name:'Fotografiska Tallinn',desc:'Museum + Rooftop-Bar mit Blick über Hafen & Altstadt',pid:46},
+    {time:'19:30',ico:'🍽️',name:'Dinner: NOA Restaurant',desc:'Am Wasser, Blick auf die Altstadt, nordische Küche',pid:29},
+    {time:'21:30',ico:'🍺',name:'Põhjala Tap Room',desc:'Industrial Chic · Craft Beer · oft Live-Musik',pid:43},
+  ],
+  so: [
+    {time:'09:00',ico:'☕',name:'Brunch & letzter Kaffee',desc:'Fika, Reval Cafe oder Lore Bistro'},
+    {time:'10:00',ico:'🌸',name:'Option A: Kadriorg Park & Schloss',desc:'Großer Park, barockes Schloss, ruhige Wege — perfekt zum Durchatmen',pid:17},
+    {time:'10:00',ico:'🛍️',name:'Option B: Balti Jaam Markt',desc:'Moderner Markt mit lokalen Spezialitäten und kleinen Shops',pid:12},
+    {time:'10:00',ico:'🏰',name:'Option C: Letzter Altstadt-Spaziergang',desc:'Noch einmal Kopfsteinpflaster, Aussichtspunkte, Innenhöfe'},
+    {time:'12:00',ico:'🎨',name:'Kumu Art Museum',desc:'Größtes Kunstmuseum der baltischen Staaten — überraschend beeindruckend',pid:47},
+    {time:'14:00',ico:'🚶',name:'Letzter Bummel',desc:'Kleine Lieblingsorte, ein letzter Cappuccino'},
+    {time:'15:15',ico:'✈️',name:'Abflug Tallinn → Riga',desc:'airBaltic BT 314 · Transfer zum Flughafen rechtzeitig!'},
+    {time:'16:05',ico:'🔄',name:'Zwischenstopp Riga',desc:'2h 35 min Wartezeit in Riga (RIX)'},
+    {time:'18:40',ico:'✈️',name:'Abflug Riga → Wien',desc:'airBaltic BT 273'},
+    {time:'19:40',ico:'🏠',name:'Ankunft Wien Schwechat',desc:'Willkommen zurück — Tallinn bleibt in Erinnerung'},
+  ],
+};
+
+// ── APP LOGIC ─────────────────────────────────────────────────────────
+let map = null;
+let mapInitialized = false;
+let markerData = []; // {marker, place}
+
+function nav(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('s-' + id).classList.add('active');
+  document.getElementById('btn-' + id).classList.add('active');
+  if (id === 'map') {
+    if (!mapInitialized) initMap();
+    else setTimeout(() => map.invalidateSize(), 50);
+  }
+}
+
+function initMap() {
+  map = L.map('map', { center:[59.437,24.745], zoom:14, zoomControl:true });
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains:'abcd', maxZoom:19
+  }).addTo(map);
+  places.forEach(p => {
+    const icon = L.divIcon({
+      className:'custom-marker',
+      html:`<div class="pin" style="background:${CATS[p.cat].color}"><span>${p.emoji||CATS[p.cat].emoji}</span></div>`,
+      iconSize:[30,36], iconAnchor:[15,36], popupAnchor:[0,-38]
+    });
+    const marker = L.marker([p.lat,p.lng],{icon}).addTo(map).on('click',()=>showDetail(p));
+    markerData.push({marker,place:p});
+  });
+  mapInitialized = true;
+}
+
+function filterMap(cat, btn) {
+  markerData.forEach(({marker,place}) => {
+    if (cat==='all' || place.cat===cat) marker.addTo(map);
+    else marker.remove();
+  });
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function showDetail(p) {
+  const cat = CATS[p.cat];
+  const el = id => document.getElementById(id);
+  el('dp-cat').textContent = cat.label;
+  el('dp-cat').style.background = cat.color;
+  el('dp-title').textContent = p.name;
+  el('dp-desc').textContent = p.desc || '';
+  if (p.day) {
+    el('dp-day').textContent = p.day;
+    el('dp-day-wrap').style.display = 'inline-flex';
+  } else {
+    el('dp-day-wrap').style.display = 'none';
+  }
+  el('dp-maps').href = `https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lng}`;
+  el('detail-panel').classList.add('open');
+  el('detail-overlay').classList.add('open');
+}
+
+function closeDetail() {
+  document.getElementById('detail-panel').classList.remove('open');
+  document.getElementById('detail-overlay').classList.remove('open');
+}
+
+// Open detail from itinerary
+function openFromPlan(pid) {
+  const p = places.find(x => x.id === pid);
+  if (!p) return;
+  showDetail(p);
+}
+
+// Plan / Day tabs
+let currentDay = 'fr';
+function showDay(day, btn) {
+  currentDay = day;
+  document.querySelectorAll('.day-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDay();
+}
+
+function renderDay() {
+  const items = itinerary[currentDay];
+  const container = document.getElementById('day-content');
+  container.innerHTML = items.map(it => `
+    <div class="it-item">
+      <div class="it-ico">${it.ico}</div>
+      <div class="it-body">
+        <div class="it-time">${it.time}</div>
+        <div class="it-name">${it.name}</div>
+        <div class="it-desc">${it.desc}</div>
+        ${it.pid ? `<div class="it-link" onclick="openFromPlan(${it.pid})">Auf Karte zeigen ↗</div>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+// Mehr screen
+function renderMehr() {
+  const catOrder = ['hotel','sightseeing','viewpoint','restaurant','cafe','bar','kultur','streetart','park'];
+  const container = document.getElementById('mehr-content');
+  container.innerHTML = catOrder.map(cat => {
+    const catPlaces = places.filter(p => p.cat === cat);
+    if (!catPlaces.length) return '';
+    const c = CATS[cat];
+    return `
+      <div class="mehr-cat-section">
+        <div class="mehr-cat-header">
+          <div class="mehr-cat-dot" style="background:${c.color}"></div>
+          <div class="mehr-cat-name">${c.emoji} ${c.label}</div>
+          <div class="mehr-cat-count">${catPlaces.length} Orte</div>
+        </div>
+        <div class="mehr-place-list">
+          ${catPlaces.map(p => `
+            <div class="mehr-place-item" onclick="showDetail(places.find(x=>x.id===${p.id}))">
+              <div class="mpi-emoji">${p.emoji||c.emoji}</div>
+              <div class="mpi-name">${p.name}</div>
+              <div class="mpi-arrow">›</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Init
+renderDay();
+renderMehr();
+</script>
+</body>
+</html>
