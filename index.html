@@ -69,12 +69,12 @@ body{font-family:'EB Garamond',Georgia,serif;color:var(--navy);}
 .it-link{font-size:10px;color:var(--gold);margin-top:3px;cursor:pointer;text-decoration:underline;text-underline-offset:2px;}
 
 /* ── MAP ── */
-#s-map{position:relative;}
+#s-map{display:flex;flex-direction:column;}
 #map-filters{padding:8px 12px;background:var(--parchment);border-bottom:1px solid var(--divider);display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;flex-shrink:0;}
 #map-filters::-webkit-scrollbar{display:none;}
 .filter-btn{flex-shrink:0;padding:5px 11px;border:1px solid var(--navy-faint2);background:transparent;color:var(--text-dim);font-family:'EB Garamond',serif;font-size:11px;letter-spacing:1px;border-radius:20px;cursor:pointer;transition:all .2s;white-space:nowrap;}
 .filter-btn.active{color:var(--navy);border-color:var(--navy);background:var(--navy-faint);}
-#map{flex:1;}
+#map{flex:1;min-height:0;}
 
 /* ── DETAIL PANEL ── */
 #detail-overlay{position:fixed;inset:0;background:rgba(26,39,68,0.3);opacity:0;pointer-events:none;transition:opacity .3s;z-index:500;}
@@ -379,7 +379,8 @@ function nav(id) {
   document.getElementById('btn-' + id).classList.add('active');
   if (id === 'map') {
     if (!mapInitialized) initMap();
-    else setTimeout(() => map.invalidateSize(), 50);
+    setTimeout(() => { if(map) map.invalidateSize(true); }, 100);
+    setTimeout(() => { if(map) map.invalidateSize(true); }, 400);
   }
 }
 
@@ -399,6 +400,8 @@ function initMap() {
     markerData.push({marker,place:p});
   });
   mapInitialized = true;
+  setTimeout(() => map.invalidateSize(true), 200);
+  setTimeout(() => map.invalidateSize(true), 600);
 }
 
 function filterMap(cat, btn) {
