@@ -93,6 +93,17 @@ body{font-family:Palatino,'Palatino Linotype','Book Antiqua',Georgia,serif;color
 .opt-label{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:3px;}
 .opt-name{font-family:Georgia,'Times New Roman',serif;font-size:13px;color:var(--navy);display:block;margin-bottom:2px;font-weight:600;}
 .opt-desc{font-size:11px;color:var(--text-dim);font-style:italic;line-height:1.4;margin-bottom:3px;}
+
+.it-variants{margin-top:10px;display:flex;flex-direction:column;gap:10px;}
+.it-variant{border:1px solid var(--navy-faint2);border-radius:8px;overflow:hidden;}
+.variant-header{padding:8px 12px;font-size:9px;letter-spacing:2px;text-transform:uppercase;font-weight:700;background:var(--navy-faint);border-left:3px solid;}
+.variant-steps{padding:10px 12px;display:flex;flex-direction:column;gap:10px;}
+.variant-step{display:flex;gap:8px;align-items:flex-start;}
+.vs-time{font-size:9px;color:var(--gold);letter-spacing:1px;min-width:36px;padding-top:3px;flex-shrink:0;}
+.vs-ico{font-size:12px;flex-shrink:0;padding-top:2px;}
+.vs-body{flex:1;}
+.vs-name{font-family:Georgia,'Times New Roman',serif;font-size:12px;color:var(--navy);margin-bottom:2px;font-weight:600;}
+.vs-desc{font-size:10px;color:var(--text-dim);font-style:italic;line-height:1.4;margin-bottom:2px;}
 .pin-home-ring{border:3px solid var(--gold)!important;box-shadow:0 0 0 2px rgba(184,137,46,0.4),0 3px 10px rgba(0,0,0,0.35)!important;}
 
 .dp-close{position:absolute;top:14px;right:18px;background:var(--navy-faint);border:none;border-radius:50%;width:30px;height:30px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-dim);}
@@ -171,6 +182,25 @@ body{font-family:Palatino,'Palatino Linotype','Book Antiqua',Georgia,serif;color
       <div class="info-card"><div class="ic-l">Zeitzone</div><div class="ic-v">Wien +1h</div></div>
       <div class="info-card"><div class="ic-l">Sprache</div><div class="ic-v">Estnisch</div></div>
       <div class="info-card"><div class="ic-l">Transfer</div><div class="ic-v">Bolt · 15 Min</div></div>
+    </div>
+  </div>
+  <div class="home-section">
+    <div class="hs-label">Die Stadt</div>
+    <div style="font-size:13px;color:var(--text-dim);line-height:1.75;font-style:italic;margin-bottom:12px;border-left:2px solid rgba(184,137,46,0.35);padding-left:12px;">
+      Tallinn ist eine der am besten erhaltenen mittelalterlichen Altstädte Europas und seit 1997 UNESCO-Weltkulturerbe. Die estnische Hauptstadt verbindet hanseatische Geschichte mit nordischer Gelassenheit und einer überraschend lebendigen, kreativen Szene. Mit rund 460.000 Einwohnern ist sie kompakt genug um zu Fuß entdeckt zu werden — und facettenreich genug um immer neue Ecken zu finden.
+    </div>
+    <a href="https://de.wikipedia.org/wiki/Tallinn" target="_blank" style="display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--gold);text-decoration:none;letter-spacing:1px;border:1px solid rgba(184,137,46,0.3);padding:5px 12px;border-radius:20px;">📖 Wikipedia · Tallinn ↗</a>
+  </div>
+  <div class="home-section">
+    <div class="hs-label">September in Tallinn</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px;">
+      <div class="info-card"><div class="ic-l">Temperatur</div><div class="ic-v">15–19°C</div></div>
+      <div class="info-card"><div class="ic-l">Morgens & Abends</div><div class="ic-v">kühl</div></div>
+      <div class="info-card"><div class="ic-l">Regen</div><div class="ic-v">möglich</div></div>
+      <div class="info-card"><div class="ic-l">Licht</div><div class="ic-v">nordisch golden</div></div>
+    </div>
+    <div style="font-size:13px;color:var(--text-dim);line-height:1.75;font-style:italic;border-left:2px solid rgba(184,137,46,0.35);padding-left:12px;">
+      Anfang September liegt Tallinn in einem goldenen Übergang zwischen Sommer und Herbst, tagsüber meist 15–19°C bei frischer, klarer Luft. Morgens und abends kühlt es merklich ab — ein leichter Mantel oder Schal gehört ins Gepäck. Gelegentliche Regenschauer sind möglich, das weiche nordische Licht macht die Stadt zu dieser Jahreszeit aber besonders atmosphärisch.
     </div>
   </div>
   <div class="home-section">
@@ -305,8 +335,6 @@ const CATS = {
 const places = [
   // HOTELS
   {id:1,name:'Nunne Boutique Hotel',cat:'hotel',lat:59.4363,lng:24.7374,emoji:'🏨',desc:'Modern renoviert, ruhige Ecke der Altstadt, gute Schalldämmung. 3–5 Min zu Fuß ins Zentrum. Weniger Bars direkt vor der Tür.'},
-  {id:2,name:'Hotel Regent Tallinn',cat:'hotel',lat:59.4370,lng:24.7496,emoji:'🏨',desc:'Sehr atmosphärisch & elegant. Kleine, exklusive Boutiquehotel-Stimmung. Ruhiger Altstadtrand, hochwertige Ausstattung.'},
-  {id:3,name:'Swissötel Tallinn',cat:'hotel',lat:59.4361,lng:24.7537,emoji:'🏨',desc:'Beste Schalldämmung, große moderne Zimmer, sehr ruhig. Komfortables Businesshotel-Niveau. Toller Blick über Tallinn.'},
   // SIGHTSEEING
   {id:4,name:'Tallinner Altstadt (UNESCO)',cat:'sightseeing',lat:59.4370,lng:24.7452,emoji:'🏰',desc:'Mittelalterliche Gassen, Türme, Innenhöfe und Kopfsteinpflaster — das Herz der Stadt. UNESCO-Weltkulturerbe.',day:'Freitag'},
   {id:5,name:'Toompea Hügel',cat:'sightseeing',lat:59.4360,lng:24.7390,emoji:'⛪',desc:'Historische Oberstadt mit Schloss und Parlament. Die bekanntesten Panoramablicke über Tallinn mit roten Dächern.',day:'Freitag'},
@@ -340,6 +368,7 @@ const places = [
   {id:31,name:'Lee Brasserie',cat:'restaurant',lat:59.4374,lng:24.7452,emoji:'🍽️',desc:'Elegante Brasserie in der Altstadt. €€€ · Fine Dining-Niveau, besondere Abende.'},
   {id:32,name:'Pegasus',cat:'restaurant',lat:59.4371,lng:24.7455,emoji:'🍽️',desc:'Klassiker in der Altstadt mit estnischer und europäischer Küche. Verlässlich gut.'},
   {id:33,name:'Olde Hanse',cat:'restaurant',lat:59.4371,lng:24.7457,emoji:'🍽️',desc:'Mittelalterliches Restaurant in der Altstadt — touristisch, aber unterhaltsam und tatsächlich gut.'},
+  {id:56,name:'Peppersack',cat:'restaurant',lat:59.4369,lng:24.7503,emoji:'🍽️',desc:'Mittelalterliches Restaurant direkt in der Altstadt. Rustikales Ambiente, traditionelle Küche, besonderes Erlebnis.'},
   {id:34,name:'Austerium Oyster Bar',cat:'restaurant',lat:59.4376,lng:24.7480,emoji:'🦪',desc:'Austernbar & Wine mit 5★ Rating. Besonders und erinnerungswürdig. €30–70.',day:'Samstag'},
   // CAFÉS
   {id:35,name:'RØST Bakery',cat:'cafe',lat:59.4376,lng:24.7431,emoji:'☕',desc:'Nordische Bäckerei mit fantastischem Kaffee und Zimtschnecken. Erster Stopp nach dem Hotel.',day:'Freitag'},
@@ -400,16 +429,34 @@ const itinerary = {
       {name:'Austerium Oyster Bar',desc:'Austern & Wein · 5★ · besonders und erinnerungswürdig',pid:34},
     ]},
     {time:'13:30',ico:'🏭',name:'Telliskivi Creative City',desc:'Street Art, Designshops, Cafés — kreatives Tallinn',pid:9},
-    {time:'15:00',ico:'🎨',name:'Street Art Kalamaja',desc:'Koit ja Hämarik, Naine und weitere Murals',pid:48},
-    {time:'16:00',ico:'⚓',name:'Spaziergang Noblessner',desc:'Am Wasser entlang — Architektur, maritime Stimmung',pid:10},
-    {time:'17:00',ico:'📸',name:'Fotografiska Tallinn',desc:'Museum + Rooftop-Bar mit Blick über Hafen & Altstadt',pid:46},
-    {time:'19:30',ico:'🍽️',name:'Dinner',options:[
-      {name:'NOA Restaurant',desc:'Direkt am Wasser · Blick auf die Altstadt · nordische Küche',pid:29},
-      {name:'Lore Bistro',desc:'Noblessner · nordisches Flair am Wasser · entspannter',pid:30},
-    ]},
-    {time:'21:30',ico:'🍺',name:'Bar',options:[
-      {name:'Põhjala Tap Room',desc:'Industrial Chic · bestes Craft Beer · oft Live-Musik',pid:43},
-      {name:'Möku',desc:'Kleine Bar in Telliskivi · lokal & authentisch',pid:45},
+    {time:'15:00',ico:'🗺️',name:'Nachmittag wählen',variantIntro:true,variants:[
+      {label:'Variante 1 · Hafen & Moderne',color:'#006b8e',steps:[
+        {time:'15:00',ico:'🎨',name:'Street Art Kalamaja',desc:'Murals Koit ja Hämarik & Naine — auf dem Weg nordwärts zu Fuß',pid:48},
+        {time:'16:00',ico:'⚓',name:'Noblessner Quarter',desc:'Hafenspaziergang, Yachthafen, maritime Stimmung',pid:10},
+        {time:'17:30',ico:'🏗️',name:'Linnahall',desc:'Monumentale Sowjet-Brutalistarchitektur am Hafen — verlassen, faszinierend, fotografisch einzigartig',pid:14},
+        {time:'19:30',ico:'🍽️',name:'Dinner',options:[
+          {name:'Lore Bistro',desc:'In Noblessner · nordisches Flair direkt am Wasser',pid:30},
+          {name:'NOA Restaurant',desc:'Am Wasser · Blick auf die Altstadt · nordische Küche',pid:29},
+        ]},
+        {time:'21:30',ico:'🍸',name:'Bar',options:[
+          {name:'Botaanik',desc:'Botanical Bar · Pflanzen & nordische Eleganz · Herbal Gin Fizz',pid:41},
+          {name:'Koht',desc:'Klein, herzlich, beste Auswahl estnischer Craft Biere',pid:44},
+        ]},
+      ]},
+      {label:'Variante 2 · Altes Tallinn',color:'#b8892e',steps:[
+        {time:'15:00',ico:'🏰',name:'Kiek in de Kök',desc:'Mittelalterlicher Verteidigungsturm mit Tunneln unter der Stadtmauer — sehr besonderes Museum',pid:18},
+        {time:'16:30',ico:'🧱',name:'Stadtmauer Spaziergang',desc:'Hellemann-Turm, Bastion Schonen, Bastionspassagen — mittelalterliche Befestigungen hautnah'},
+        {time:'18:00',ico:'🔭',name:'Toompea & Patkuli im Abendlicht',desc:'Alexander-Newski-Kathedrale, Aussicht bei warmem Abendlicht — hier stimmt die Stimmung',pid:21},
+        {time:'19:30',ico:'🍽️',name:'Dinner',options:[
+          {name:'Olde Hanse',desc:'Mittelalterliches Ambiente · touristisch aber tatsächlich gut · passt perfekt zum Tag',pid:33},
+          {name:'Peppersack',desc:'Rustikales mittelalterliches Restaurant direkt in der Altstadt',pid:56},
+        ]},
+        {time:'21:30',ico:'🍸',name:'Bar',options:[
+          {name:'Whisper Sister',desc:'Speakeasy · Kerzenlicht & Jazz · einfach klingeln',pid:40},
+          {name:'Botaanik',desc:'Botanical Bar · Pflanzen & nordische Eleganz',pid:41},
+          {name:'Koht',desc:'Klein, herzlich, lokales Craft Beer',pid:44},
+        ]},
+      ]},
     ]},
   ],
   so: [
@@ -512,6 +559,30 @@ function showDay(day, btn) {
   renderDay();
 }
 
+function renderOpts(opts) {
+  if (!opts) return '';
+  return `<div class="it-options">${opts.map((opt,i) => `
+    <div class="it-option">
+      <span class="opt-label">Option ${i+1}</span>
+      <span class="opt-name">${opt.name}</span>
+      ${opt.desc ? `<div class="opt-desc">${opt.desc}</div>` : ''}
+      ${opt.pid ? `<div class="it-link" onclick="openFromPlan(${opt.pid})">Auf Karte zeigen ↗</div>` : ''}
+    </div>`).join('')}</div>`;
+}
+
+function renderStep(s) {
+  return `<div class="variant-step">
+    <div class="vs-time">${s.time||''}</div>
+    <div class="vs-ico">${s.ico}</div>
+    <div class="vs-body">
+      <div class="vs-name">${s.name}</div>
+      ${s.desc && !s.options ? `<div class="vs-desc">${s.desc}</div>` : ''}
+      ${s.pid && !s.options ? `<div class="it-link" onclick="openFromPlan(${s.pid})">Auf Karte zeigen ↗</div>` : ''}
+      ${renderOpts(s.options)}
+    </div>
+  </div>`;
+}
+
 function renderDay() {
   const items = itinerary[currentDay];
   const container = document.getElementById('day-content');
@@ -521,14 +592,13 @@ function renderDay() {
       <div class="it-body">
         <div class="it-time">${it.time}</div>
         <div class="it-name">${it.name}</div>
-        ${it.desc && !it.options ? `<div class="it-desc">${it.desc}</div>` : ''}
-        ${it.pid && !it.options ? `<div class="it-link" onclick="openFromPlan(${it.pid})">Auf Karte zeigen ↗</div>` : ''}
-        ${it.options ? `<div class="it-options">${it.options.map((opt,i) => `
-          <div class="it-option">
-            <span class="opt-label">Option ${i+1}</span>
-            <span class="opt-name">${opt.name}</span>
-            ${opt.desc ? `<div class="opt-desc">${opt.desc}</div>` : ''}
-            ${opt.pid ? `<div class="it-link" onclick="openFromPlan(${opt.pid})">Auf Karte zeigen ↗</div>` : ''}
+        ${it.desc && !it.options && !it.variantIntro ? `<div class="it-desc">${it.desc}</div>` : ''}
+        ${it.pid && !it.options && !it.variantIntro ? `<div class="it-link" onclick="openFromPlan(${it.pid})">Auf Karte zeigen ↗</div>` : ''}
+        ${renderOpts(it.options)}
+        ${it.variantIntro ? `<div class="it-variants">${it.variants.map(v => `
+          <div class="it-variant">
+            <div class="variant-header" style="border-color:${v.color}">${v.label}</div>
+            <div class="variant-steps">${v.steps.map(s => renderStep(s)).join('')}</div>
           </div>`).join('')}</div>` : ''}
       </div>
     </div>
