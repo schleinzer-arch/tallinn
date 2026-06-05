@@ -88,6 +88,13 @@ body{font-family:Palatino,'Palatino Linotype','Book Antiqua',Georgia,serif;color
 .dp-desc{font-size:13px;color:var(--text-dim);line-height:1.7;font-style:italic;margin:0 20px 16px;border-left:2px solid rgba(184,137,46,0.4);padding-left:12px;}
 .dp-maps{display:block;margin:0 20px;padding:12px;background:transparent;border:1px solid rgba(26,39,68,0.28);color:var(--navy);font-family:Palatino,'Palatino Linotype','Book Antiqua',Georgia,serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;border-radius:4px;text-align:center;text-decoration:none;transition:background .2s;}
 .dp-maps:hover{background:var(--navy-faint);}
+.it-options{margin-top:8px;display:flex;flex-direction:column;gap:7px;}
+.it-option{background:var(--navy-faint);border:1px solid var(--navy-faint2);border-radius:6px;padding:9px 11px;}
+.opt-label{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:3px;}
+.opt-name{font-family:Georgia,'Times New Roman',serif;font-size:13px;color:var(--navy);display:block;margin-bottom:2px;font-weight:600;}
+.opt-desc{font-size:11px;color:var(--text-dim);font-style:italic;line-height:1.4;margin-bottom:3px;}
+.pin-home-ring{border:3px solid var(--gold)!important;box-shadow:0 0 0 2px rgba(184,137,46,0.4),0 3px 10px rgba(0,0,0,0.35)!important;}
+
 .dp-close{position:absolute;top:14px;right:18px;background:var(--navy-faint);border:none;border-radius:50%;width:30px;height:30px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-dim);}
 
 /* ── MEHR ── */
@@ -150,7 +157,7 @@ body{font-family:Palatino,'Palatino Linotype','Book Antiqua',Georgia,serif;color
       <div class="fr-icon">✈️</div>
       <div class="fr-body">
         <div class="fr-ttl">Tallinn → Riga → Wien</div>
-        <div class="fr-sub">So 06.09. · BT 314+273 · 15:15–19:40 · via Riga</div>
+        <div class="fr-sub">So 06.09. · BT 314+273 · 14:10–19:40 · via Riga</div>
       </div>
       <div class="fr-badge">Rückflug</div>
     </div>
@@ -365,35 +372,53 @@ const places = [
 const itinerary = {
   fr: [
     {time:'08:30',ico:'✈️',name:'Abflug Wien Schwechat',desc:'airBaltic BT 832 · Direktflug · Nur Handgepäck'},
-    {time:'11:50',ico:'🛬',name:'Ankunft Tallinn Lennart Meri',desc:'Transfer per Bolt ins Hotel · ca. 10–15 Minuten'},
-    {time:'12:30',ico:'🏨',name:'Einchecken & durchatmen',desc:'Kurze Ruhepause — Tallinn wartet'},
-    {time:'13:30',ico:'🏰',name:'Erster Spaziergang',desc:'Viru Gate → Rathausplatz → Katharinenpassage → Toompea Hügel → Patkuli Aussichtspunkt',pid:4},
-    {time:'15:00',ico:'☕',name:'RØST Bakery',desc:'Nordische Bäckerei · Zimtschnecken & fantastischer Kaffee',pid:35},
+    {time:'11:50',ico:'🛬',name:'Ankunft Tallinn Lennart Meri',desc:'Bolt direkt zum Nunne Boutique Hotel · ca. 10–15 Min'},
+    {time:'12:30',ico:'🏨',name:'Einchecken · Nunne Boutique Hotel',desc:'Kurze Ruhepause — Altstadt wartet direkt vor der Tür (3 Min zu Fuß)',pid:1},
+    {time:'13:30',ico:'🏰',name:'Erster Spaziergang',desc:'Direkt vom Hotel in die Altstadt: Viru Gate → Rathausplatz → Katharinenpassage → Toompea → Patkuli',pid:4},
+    {time:'15:00',ico:'☕',name:'Café in der Altstadt',options:[
+      {name:'Maiasmokk Café',desc:'Ältestes Café Tallinns seit 1864 · Marzipan, Torte, historisches Interieur · ein Muss',pid:36},
+      {name:'Pierre Chocolaterie',desc:'Handgemachte Schokolade & Pralinés · klein, intim, köstlich',pid:37},
+    ]},
     {time:'16:00',ico:'🚶',name:'Altstadt erkunden',desc:'Treiben lassen — versteckte Höfe, Lehmpforte, Dompark'},
     {time:'18:00',ico:'🔭',name:'Sonnenuntergang am Patkuli',desc:'Der schönste Blick über die Altstadt — früh sein!',pid:21},
-    {time:'19:30',ico:'🍽️',name:'Dinner: Rataskaevu 16',desc:'Moderne estnische Küche mitten in der Altstadt',pid:27},
-    {time:'21:30',ico:'🍸',name:'Whisper Sister',desc:'Hinter der unscheinbaren Tür klingeln — Kerzenlicht & Jazz',pid:40},
+    {time:'19:30',ico:'🍽️',name:'Dinner',options:[
+      {name:'Rataskaevu 16',desc:'Moderne estnische Küche · ehrliche Zutaten, schönes Design',pid:27},
+      {name:'Lee Brasserie',desc:'Elegant, €€€ · für einen besonderen ersten Abend',pid:31},
+      {name:'Pegasus',desc:'Klassiker in der Altstadt · verlässlich gut',pid:32},
+    ]},
+    {time:'21:30',ico:'🍸',name:'Bar',options:[
+      {name:'Whisper Sister',desc:'Speakeasy · Kerzenlicht & Jazz · einfach klingeln',pid:40},
+      {name:'Botaanik',desc:'Botanical Bar · Pflanzen, nordische Eleganz, Herbal Gin Fizz',pid:41},
+      {name:'Sigmund Freud Bar',desc:'Verspielt & exzentrisch · Cocktails mit Geschichte',pid:42},
+    ]},
   ],
   sa: [
     {time:'09:00',ico:'☕',name:'Frühstück & Kaffee',desc:'Langsam aufwachen — Tallinn ist morgens leise'},
-    {time:'10:00',ico:'🕵️',name:'KGB Museum & Hotel Viru',desc:'Führung durch Sowjetzeit, Überwachung und Kalten Krieg',pid:11},
-    {time:'12:30',ico:'🍽️',name:'Mittagessen: F-Hoone',desc:'Legendäres Restaurant in ehemaliger Industriehalle in Telliskivi',pid:28},
+    {time:'10:00',ico:'🕵️',name:'KGB Museum & Hotel Viru',desc:'Zu Fuß vom Nunne (~8 Min) · Führung durch Sowjetzeit & Kalten Krieg',pid:11},
+    {time:'12:30',ico:'🍽️',name:'Mittagessen',options:[
+      {name:'F-Hoone',desc:'Legendäres Restaurant in ehemaliger Industriehalle in Telliskivi',pid:28},
+      {name:'Austerium Oyster Bar',desc:'Austern & Wein · 5★ · besonders und erinnerungswürdig',pid:34},
+    ]},
     {time:'13:30',ico:'🏭',name:'Telliskivi Creative City',desc:'Street Art, Designshops, Cafés — kreatives Tallinn',pid:9},
-    {time:'15:00',ico:'🎨',name:'Street Art Kalamaja',desc:'Street Art Koit ja Hämarik, Naine und weitere Murals',pid:48},
+    {time:'15:00',ico:'🎨',name:'Street Art Kalamaja',desc:'Koit ja Hämarik, Naine und weitere Murals',pid:48},
     {time:'16:00',ico:'⚓',name:'Spaziergang Noblessner',desc:'Am Wasser entlang — Architektur, maritime Stimmung',pid:10},
     {time:'17:00',ico:'📸',name:'Fotografiska Tallinn',desc:'Museum + Rooftop-Bar mit Blick über Hafen & Altstadt',pid:46},
-    {time:'19:30',ico:'🍽️',name:'Dinner: NOA Restaurant',desc:'Am Wasser, Blick auf die Altstadt, nordische Küche',pid:29},
-    {time:'21:30',ico:'🍺',name:'Põhjala Tap Room',desc:'Industrial Chic · Craft Beer · oft Live-Musik',pid:43},
+    {time:'19:30',ico:'🍽️',name:'Dinner',options:[
+      {name:'NOA Restaurant',desc:'Direkt am Wasser · Blick auf die Altstadt · nordische Küche',pid:29},
+      {name:'Lore Bistro',desc:'Noblessner · nordisches Flair am Wasser · entspannter',pid:30},
+    ]},
+    {time:'21:30',ico:'🍺',name:'Bar',options:[
+      {name:'Põhjala Tap Room',desc:'Industrial Chic · bestes Craft Beer · oft Live-Musik',pid:43},
+      {name:'Möku',desc:'Kleine Bar in Telliskivi · lokal & authentisch',pid:45},
+    ]},
   ],
   so: [
-    {time:'09:00',ico:'☕',name:'Brunch & letzter Kaffee',desc:'Fika, Reval Cafe oder Lore Bistro'},
-    {time:'10:00',ico:'🌸',name:'Option A: Kadriorg Park & Schloss',desc:'Großer Park, barockes Schloss, ruhige Wege — perfekt zum Durchatmen',pid:17},
-    {time:'10:00',ico:'🛍️',name:'Option B: Balti Jaam Markt',desc:'Moderner Markt mit lokalen Spezialitäten und kleinen Shops',pid:12},
-    {time:'10:00',ico:'🏰',name:'Option C: Letzter Altstadt-Spaziergang',desc:'Noch einmal Kopfsteinpflaster, Aussichtspunkte, Innenhöfe'},
-    {time:'12:00',ico:'🎨',name:'Kumu Art Museum',desc:'Größtes Kunstmuseum der baltischen Staaten — überraschend beeindruckend',pid:47},
-    {time:'14:00',ico:'🚶',name:'Letzter Bummel',desc:'Kleine Lieblingsorte, ein letzter Cappuccino'},
-    {time:'15:15',ico:'✈️',name:'Abflug Tallinn → Riga',desc:'airBaltic BT 314 · Transfer zum Flughafen rechtzeitig!'},
-    {time:'16:05',ico:'🔄',name:'Zwischenstopp Riga',desc:'2h 35 min Wartezeit in Riga (RIX)'},
+    {time:'09:00',ico:'🍳',name:'Frühstück im Nunne Hotel',desc:'Entspannt starten — letzter Morgen in Tallinn',pid:1},
+    {time:'10:00',ico:'🏰',name:'Letzter Altstadt-Spaziergang',desc:'Noch einmal Kopfsteinpflaster, Aussichtspunkte, versteckte Höfe — kein Plan, einfach treiben lassen',pid:4},
+    {time:'11:30',ico:'🏨',name:'Zurück zum Nunne · Auschecken',desc:'Koffer fertig, Hotel verlassen',pid:1},
+    {time:'12:00',ico:'🚖',name:'Aufbruch zum Flughafen',desc:'Bolt · ca. 15 Min → Ankunft ~12:15 · Check-in für 14:10 Flug'},
+    {time:'14:10',ico:'✈️',name:'Abflug Tallinn → Riga',desc:'airBaltic BT 314'},
+    {time:'15:00',ico:'🔄',name:'Zwischenstopp Riga',desc:'ca. 3h 40 min Wartezeit (RIX) · Abflug 18:40'},
     {time:'18:40',ico:'✈️',name:'Abflug Riga → Wien',desc:'airBaltic BT 273'},
     {time:'19:40',ico:'🏠',name:'Ankunft Wien Schwechat',desc:'Willkommen zurück — Tallinn bleibt in Erinnerung'},
   ],
@@ -423,10 +448,13 @@ function initMap() {
     subdomains:'abcd', maxZoom:19
   }).addTo(map);
   places.forEach(p => {
+    const isHome = p.id === 1;
     const icon = L.divIcon({
       className:'custom-marker',
-      html:`<div class="pin" style="background:${CATS[p.cat].color}"><span>${p.emoji||CATS[p.cat].emoji}</span></div>`,
-      iconSize:[30,36], iconAnchor:[15,36], popupAnchor:[0,-38]
+      html: isHome
+        ? `<div class="pin pin-home-ring" style="background:${CATS[p.cat].color}"><span>🏠</span></div>`
+        : `<div class="pin" style="background:${CATS[p.cat].color}"><span>${p.emoji||CATS[p.cat].emoji}</span></div>`,
+      iconSize:[isHome?34:30,isHome?40:36], iconAnchor:[isHome?17:15,isHome?40:36], popupAnchor:[0,-38]
     });
     const marker = L.marker([p.lat,p.lng],{icon}).addTo(map).on('click',()=>showDetail(p));
     markerData.push({marker,place:p});
@@ -493,8 +521,15 @@ function renderDay() {
       <div class="it-body">
         <div class="it-time">${it.time}</div>
         <div class="it-name">${it.name}</div>
-        <div class="it-desc">${it.desc}</div>
-        ${it.pid ? `<div class="it-link" onclick="openFromPlan(${it.pid})">Auf Karte zeigen ↗</div>` : ''}
+        ${it.desc && !it.options ? `<div class="it-desc">${it.desc}</div>` : ''}
+        ${it.pid && !it.options ? `<div class="it-link" onclick="openFromPlan(${it.pid})">Auf Karte zeigen ↗</div>` : ''}
+        ${it.options ? `<div class="it-options">${it.options.map((opt,i) => `
+          <div class="it-option">
+            <span class="opt-label">Option ${i+1}</span>
+            <span class="opt-name">${opt.name}</span>
+            ${opt.desc ? `<div class="opt-desc">${opt.desc}</div>` : ''}
+            ${opt.pid ? `<div class="it-link" onclick="openFromPlan(${opt.pid})">Auf Karte zeigen ↗</div>` : ''}
+          </div>`).join('')}</div>` : ''}
       </div>
     </div>
   `).join('');
