@@ -369,9 +369,13 @@ const CATS = {
   kultur:      { label:'Kultur/Museum',color:'#1a7a5e', emoji:'🎭' },
   streetart:   { label:'Street Art',   color:'#7000b4', emoji:'🎨' },
   park:        { label:'Park',         color:'#2d7a2d', emoji:'🌿' },
+  intro:       { label:'Einführung',   color:'#1a2744', emoji:'🎧' },
 };
 
 const places = [
+  // INTRO
+  {id:97,name:'Tallinn — Einführung',cat:'intro',lat:59.4370,lng:24.7452,emoji:'🏙️',audio:'Tallinn.mp3',desc:'Allgemeine Einführung in die Stadt Tallinn.'},
+  {id:98,name:'Estland — Hintergrund',cat:'intro',lat:59.4370,lng:24.7452,emoji:'🇪🇪',audio:'Estland.mp3',desc:'Land, Geschichte und Kultur Estlands.'},
   // HOTELS
   {id:1,name:'Nunne Boutique Hotel',cat:'hotel',lat:59.4363,lng:24.7374,emoji:'🏨',desc:'Modern renoviert, ruhige Ecke der Altstadt, gute Schalldämmung. 3–5 Min zu Fuß ins Zentrum. Weniger Bars direkt vor der Tür.'},
   // SIGHTSEEING
@@ -534,6 +538,7 @@ function initMap() {
     subdomains:'abcd', maxZoom:19
   }).addTo(map);
   places.forEach(p => {
+    if (p.cat === 'intro') return;
     const isHome = p.id === 1;
     const icon = L.divIcon({
       className:'custom-marker',
@@ -768,63 +773,6 @@ function skipAudio(pid, sec) {
   a.currentTime = Math.max(0, Math.min(a.duration, a.currentTime + sec));
 }
 
-function toggleIntroAudio(key) {
-  const audio = document.getElementById('aud-' + key);
-  if (!audio) return;
-  if (curAudioEl && curAudioEl !== audio) {
-    curAudioEl.pause();
-    if (curAudioPid) updateAudioBtn(curAudioPid, false);
-    else updateAudioBtnKey(curAudioKey, false);
-  }
-  const player = document.getElementById('acp-' + key);
-  if (!player.classList.contains('open')) {
-    document.querySelectorAll('.ac-player.open').forEach(p => p.classList.remove('open'));
-    document.querySelectorAll('.audio-card.is-open').forEach(p => p.classList.remove('is-open'));
-    player.classList.add('open');
-    document.getElementById('acard-' + key).classList.add('is-open');
-  }
-  if (audio.paused) {
-    audio.play();
-    updateAudioBtnKey(key, true);
-    curAudioEl = audio; curAudioPid = null; curAudioKey = key;
-  } else {
-    audio.pause();
-    updateAudioBtnKey(key, false);
-  }
-}
-function updateAudioBtnKey(key, playing) {
-  const icon = playing ? '⏸' : '▶';
-  const b1 = document.getElementById('abtn-' + key);
-  const b2 = document.getElementById('amain-' + key);
-  if (b1) b1.textContent = icon;
-  if (b2) b2.textContent = icon;
-}
-function audioProgressKey(key) {
-  const a = document.getElementById('aud-' + key);
-  if (!a||!a.duration) return;
-  document.getElementById('afill-' + key).style.width=(a.currentTime/a.duration*100)+'%';
-  document.getElementById('acur-' + key).textContent=fmtTime(a.currentTime);
-}
-function audioDurationKey(key) {
-  const a = document.getElementById('aud-' + key);
-  document.getElementById('adur-' + key).textContent=fmtTime(a.duration);
-}
-function audioEndedKey(key) {
-  updateAudioBtnKey(key, false);
-  document.getElementById('afill-' + key).style.width='0%';
-  document.getElementById('acur-' + key).textContent='0:00';
-  curAudioEl=null; curAudioPid=null; curAudioKey=null;
-}
-function seekAudioKey(e, key) {
-  const a = document.getElementById('aud-' + key);
-  const r = e.currentTarget.getBoundingClientRect();
-  a.currentTime = ((e.clientX-r.left)/r.width)*a.duration;
-}
-function skipAudioKey(key, sec) {
-  const a = document.getElementById('aud-' + key);
-  a.currentTime = Math.max(0, Math.min(a.duration, a.currentTime+sec));
-}
-
 function jumpToMap(pid) {
   const p = places.find(x => x.id === pid);
   if (!p) return;
@@ -833,54 +781,16 @@ function jumpToMap(pid) {
 }
 
 function renderAudio() {
-  const audioPlaces = places.filter(p => p.audio);
   const container = document.getElementById('audio-list');
   if (!container) return;
-
-  const introTracks = [
-    {key:'tallinn', src:'audio/Tallinn.mp3',    icon:'🏙️', name:'Tallinn — Einführung',  sub:'Allgemeine Einführung in die Stadt'},
-    {key:'estland', src:'audio/Estland.mp3',    icon:'🇪🇪', name:'Estland — Hintergrund', sub:'Land, Geschichte, Kultur'},
-  ];
-
-  const introHtml = `<div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;padding:0 2px;">Einführung</div>` +
-    introTracks.map(t => `
-    <div class="audio-card" id="acard-${t.key}">
-      <div class="ac-header" onclick="toggleIntroAudio('${t.key}')">
-        <div class="ac-num">—</div>
-        <div class="ac-icon">${t.icon}</div>
-        <div class="ac-info">
-          <div class="ac-name">${t.name}</div>
-          <div class="ac-cat">${t.sub}</div>
-        </div>
-        <button class="ac-playbtn" id="abtn-${t.key}" onclick="event.stopPropagation();toggleIntroAudio('${t.key}')">▶</button>
-      </div>
-      <div class="ac-player" id="acp-${t.key}">
-        <audio id="aud-${t.key}" preload="none" src="${t.src}"
-          ontimeupdate="audioProgressKey('${t.key}')"
-          onloadedmetadata="audioDurationKey('${t.key}')"
-          onended="audioEndedKey('${t.key}')"></audio>
-        <div class="ac-progress-row">
-          <div class="ac-time" id="acur-${t.key}">0:00</div>
-          <div class="ac-bar-wrap" onclick="seekAudioKey(event,'${t.key}')">
-            <div class="ac-bar-fill" id="afill-${t.key}"></div>
-          </div>
-          <div class="ac-time" id="adur-${t.key}">--:--</div>
-        </div>
-        <div class="ac-controls">
-          <button class="ac-skip" onclick="skipAudioKey('${t.key}',-15)">⏮ 15s</button>
-          <button class="ac-mainbtn" id="amain-${t.key}" onclick="toggleIntroAudio('${t.key}')">▶</button>
-          <button class="ac-skip" onclick="skipAudioKey('${t.key}',15)">15s ⏭</button>
-        </div>
-      </div>
-    </div>`).join('');
-
-  const divider = `<div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin:14px 2px 8px;">Sehenswürdigkeiten</div>`;
-
-  container.innerHTML = introHtml + divider + audioPlaces.map((p, i) => {
+  const introPlaces = places.filter(p => p.cat === 'intro' && p.audio);
+  const audioPlaces = places.filter(p => p.cat !== 'intro' && p.audio);
+  const makeCard = (p, num) => {
     const cat = CATS[p.cat];
+    const hasMap = p.cat !== 'intro';
     return `<div class="audio-card" id="acard-${p.id}">
       <div class="ac-header" onclick="toggleAudio(${p.id})">
-        <div class="ac-num">${String(i+1).padStart(2,'0')}</div>
+        <div class="ac-num">${num}</div>
         <div class="ac-icon">${p.emoji||cat.emoji}</div>
         <div class="ac-info">
           <div class="ac-name">${p.name}</div>
@@ -905,12 +815,17 @@ function renderAudio() {
           <button class="ac-mainbtn" id="amain-${p.id}" onclick="toggleAudio(${p.id})">▶</button>
           <button class="ac-skip" onclick="skipAudio(${p.id},15)">15s ⏭</button>
         </div>
-        <div class="ac-maplink" onclick="jumpToMap(${p.id})">📍 Auf Karte zeigen ↗</div>
+        ${hasMap ? `<div class="ac-maplink" onclick="jumpToMap(${p.id})">📍 Auf Karte zeigen ↗</div>` : ''}
       </div>
     </div>`;
-  }).join('');
+  };
+  let html = '';
+  if (introPlaces.length) {
+    html += '<div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;padding:0 2px;">Einführung</div>';
+    html += introPlaces.map(p => makeCard(p, '—')).join('');
+    if (audioPlaces.length) html += '<div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin:14px 2px 8px;">Sehenswürdigkeiten</div>';
+  }
+  html += audioPlaces.map((p,i) => makeCard(p, String(i+1).padStart(2,'0'))).join('');
+  container.innerHTML = html;
 }
-
-</script>
-</body>
-</html>
+>
