@@ -458,7 +458,7 @@ function showDetail(p) {
   } else {
     el('dp-day-wrap').style.display = 'none';
   }
-  el('dp-maps').href = `https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lng}`;
+  el('dp-maps').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.name + ' Tallinn')}`;
   el('detail-panel').classList.add('open');
   el('detail-overlay').classList.add('open');
 }
