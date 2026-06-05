@@ -219,11 +219,6 @@ body{font-family:Palatino,'Palatino Linotype','Book Antiqua',Georgia,serif;color
       Tallinn ist eine der am besten erhaltenen mittelalterlichen Altstädte Europas und seit 1997 UNESCO-Weltkulturerbe. Die estnische Hauptstadt verbindet hanseatische Geschichte mit nordischer Gelassenheit und einer überraschend lebendigen, kreativen Szene. Mit rund 460.000 Einwohnern ist sie kompakt genug um zu Fuß entdeckt zu werden — und facettenreich genug um immer neue Ecken zu finden.
     </div>
     <a href="https://de.wikipedia.org/wiki/Tallinn" target="_blank" style="display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--gold);text-decoration:none;letter-spacing:1px;border:1px solid rgba(184,137,46,0.3);padding:5px 12px;border-radius:20px;">📖 Wikipedia · Tallinn ↗</a>
-    <div style="margin-top:12px;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;">🎧 Reinhören</div>
-    <div class="home-audio-row">
-      <div class="ha-card"><span class="ha-icon">🏙️</span><div class="ha-info"><div class="ha-name">Tallinn — Einführung</div><div class="ha-dur" id="ha-dur-1">wird geladen…</div></div><button class="ha-btn" id="ha-btn-1" onclick="toggleHomeAudio('home-audio-1','ha-btn-1')">▶</button><audio id="home-audio-1" preload="metadata" src="audio/Tallinn.mp3" onloadedmetadata="document.getElementById('ha-dur-1').textContent=fmtTime(this.duration)" onended="document.getElementById('ha-btn-1').textContent='▶'"></audio></div>
-      <div class="ha-card"><span class="ha-icon">🇪🇪</span><div class="ha-info"><div class="ha-name">Estland — Hintergrund</div><div class="ha-dur" id="ha-dur-2">wird geladen…</div></div><button class="ha-btn" id="ha-btn-2" onclick="toggleHomeAudio('home-audio-2','ha-btn-2')">▶</button><audio id="home-audio-2" preload="metadata" src="audio/Estland.mp3" onloadedmetadata="document.getElementById('ha-dur-2').textContent=fmtTime(this.duration)" onended="document.getElementById('ha-btn-2').textContent='▶'"></audio></div>
-    </div>
   </div>
   <div class="home-section">
     <div class="hs-label">September in Tallinn</div>
@@ -685,7 +680,7 @@ renderMehr();
 renderAudio();
 
 // ── AUDIO GUIDE ──────────────────────────────────────────────────────
-let curAudioEl = null, curAudioPid = null;
+let curAudioEl = null, curAudioPid = null, curAudioKey = null;
 
 function fmtTime(s) {
   if (!s || isNaN(s)) return '0:00';
@@ -773,6 +768,63 @@ function skipAudio(pid, sec) {
   a.currentTime = Math.max(0, Math.min(a.duration, a.currentTime + sec));
 }
 
+function toggleIntroAudio(key) {
+  const audio = document.getElementById('aud-' + key);
+  if (!audio) return;
+  if (curAudioEl && curAudioEl !== audio) {
+    curAudioEl.pause();
+    if (curAudioPid) updateAudioBtn(curAudioPid, false);
+    else updateAudioBtnKey(curAudioKey, false);
+  }
+  const player = document.getElementById('acp-' + key);
+  if (!player.classList.contains('open')) {
+    document.querySelectorAll('.ac-player.open').forEach(p => p.classList.remove('open'));
+    document.querySelectorAll('.audio-card.is-open').forEach(p => p.classList.remove('is-open'));
+    player.classList.add('open');
+    document.getElementById('acard-' + key).classList.add('is-open');
+  }
+  if (audio.paused) {
+    audio.play();
+    updateAudioBtnKey(key, true);
+    curAudioEl = audio; curAudioPid = null; curAudioKey = key;
+  } else {
+    audio.pause();
+    updateAudioBtnKey(key, false);
+  }
+}
+function updateAudioBtnKey(key, playing) {
+  const icon = playing ? '⏸' : '▶';
+  const b1 = document.getElementById('abtn-' + key);
+  const b2 = document.getElementById('amain-' + key);
+  if (b1) b1.textContent = icon;
+  if (b2) b2.textContent = icon;
+}
+function audioProgressKey(key) {
+  const a = document.getElementById('aud-' + key);
+  if (!a||!a.duration) return;
+  document.getElementById('afill-' + key).style.width=(a.currentTime/a.duration*100)+'%';
+  document.getElementById('acur-' + key).textContent=fmtTime(a.currentTime);
+}
+function audioDurationKey(key) {
+  const a = document.getElementById('aud-' + key);
+  document.getElementById('adur-' + key).textContent=fmtTime(a.duration);
+}
+function audioEndedKey(key) {
+  updateAudioBtnKey(key, false);
+  document.getElementById('afill-' + key).style.width='0%';
+  document.getElementById('acur-' + key).textContent='0:00';
+  curAudioEl=null; curAudioPid=null; curAudioKey=null;
+}
+function seekAudioKey(e, key) {
+  const a = document.getElementById('aud-' + key);
+  const r = e.currentTarget.getBoundingClientRect();
+  a.currentTime = ((e.clientX-r.left)/r.width)*a.duration;
+}
+function skipAudioKey(key, sec) {
+  const a = document.getElementById('aud-' + key);
+  a.currentTime = Math.max(0, Math.min(a.duration, a.currentTime+sec));
+}
+
 function jumpToMap(pid) {
   const p = places.find(x => x.id === pid);
   if (!p) return;
@@ -784,7 +836,47 @@ function renderAudio() {
   const audioPlaces = places.filter(p => p.audio);
   const container = document.getElementById('audio-list');
   if (!container) return;
-  container.innerHTML = audioPlaces.map((p, i) => {
+
+  const introTracks = [
+    {key:'tallinn', src:'audio/Tallinn.mp3',    icon:'🏙️', name:'Tallinn — Einführung',  sub:'Allgemeine Einführung in die Stadt'},
+    {key:'estland', src:'audio/Estland.mp3',    icon:'🇪🇪', name:'Estland — Hintergrund', sub:'Land, Geschichte, Kultur'},
+  ];
+
+  const introHtml = `<div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;padding:0 2px;">Einführung</div>` +
+    introTracks.map(t => `
+    <div class="audio-card" id="acard-${t.key}">
+      <div class="ac-header" onclick="toggleIntroAudio('${t.key}')">
+        <div class="ac-num">—</div>
+        <div class="ac-icon">${t.icon}</div>
+        <div class="ac-info">
+          <div class="ac-name">${t.name}</div>
+          <div class="ac-cat">${t.sub}</div>
+        </div>
+        <button class="ac-playbtn" id="abtn-${t.key}" onclick="event.stopPropagation();toggleIntroAudio('${t.key}')">▶</button>
+      </div>
+      <div class="ac-player" id="acp-${t.key}">
+        <audio id="aud-${t.key}" preload="none" src="${t.src}"
+          ontimeupdate="audioProgressKey('${t.key}')"
+          onloadedmetadata="audioDurationKey('${t.key}')"
+          onended="audioEndedKey('${t.key}')"></audio>
+        <div class="ac-progress-row">
+          <div class="ac-time" id="acur-${t.key}">0:00</div>
+          <div class="ac-bar-wrap" onclick="seekAudioKey(event,'${t.key}')">
+            <div class="ac-bar-fill" id="afill-${t.key}"></div>
+          </div>
+          <div class="ac-time" id="adur-${t.key}">--:--</div>
+        </div>
+        <div class="ac-controls">
+          <button class="ac-skip" onclick="skipAudioKey('${t.key}',-15)">⏮ 15s</button>
+          <button class="ac-mainbtn" id="amain-${t.key}" onclick="toggleIntroAudio('${t.key}')">▶</button>
+          <button class="ac-skip" onclick="skipAudioKey('${t.key}',15)">15s ⏭</button>
+        </div>
+      </div>
+    </div>`).join('');
+
+  const divider = `<div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin:14px 2px 8px;">Sehenswürdigkeiten</div>`;
+
+  container.innerHTML = introHtml + divider + audioPlaces.map((p, i) => {
     const cat = CATS[p.cat];
     return `<div class="audio-card" id="acard-${p.id}">
       <div class="ac-header" onclick="toggleAudio(${p.id})">
