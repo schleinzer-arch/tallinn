@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Tallinn · September</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/favicon.png">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 
 <style>
@@ -641,6 +643,34 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
 /* ════════════════════════════════════════════════════
    DESKTOP  ≥1100px
    ═══════════════════════════════════════════════════ */
+
+/* ── Bild-Fallbacks (sichtbarer Alt-Text vermeiden) ── */
+.hero-img, .plan-img, .city-illus img { color: transparent; }
+
+/* Hero: Navy-Fallback wenn Bild nicht lädt */
+.hero-wrap {
+  background: linear-gradient(155deg, #1a2744 0%, #223060 60%, #2e4070 100%);
+}
+
+/* Plan-Header: Fallback */
+.plan-img-wrap {
+  background: linear-gradient(155deg, #e8ddc8 0%, #d4c8a8 100%);
+}
+
+/* Stadt-Illustration: Mindesthöhe damit kein Kollaps */
+.city-illus img { min-height: 180px; background: var(--cream-dk); }
+
+/* Home Desktop: Inhaltsbreite begrenzen */
+@media (min-width: 1100px) {
+  .home-section-inner {
+    max-width: 900px;
+  }
+  /* Info-Grid: nicht volle Breite */
+  .info-grid { max-width: 600px; }
+  /* Flug-Rows: nicht volle Breite */
+  .flight-row { max-width: 700px; }
+}
+
 @media (min-width: 1100px) {
 
   html, body {
@@ -747,20 +777,23 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
   #s-impr { overflow-y: visible; }
 
   /* ── Hero ── */
-  .hero-wrap { height: clamp(360px, 48vh, 560px); }
+  .hero-wrap { height: clamp(320px, 44vh, 500px); }
   .hero-title { font-size: 76px; letter-spacing: -2.5px; }
   .hero-txt   { bottom: 44px; left: 56px; right: 56px; }
   .hero-eyebrow { font-size: 11px; }
   .hero-sub { font-size: 13px; }
 
   /* ── Home ── */
-  .home-section { padding: 36px 56px; }
+  .home-section { padding: 40px 56px; max-width: 1100px; }
   .home-section:last-child { padding-bottom: 80px; }
+  /* Stadt-Sektion: Text + Illustration nebeneinander */
   .city-wrap { flex-direction: row; align-items: flex-start; gap: 48px; }
-  .city-text { flex: 1; }
-  .city-illus { width: 360px; flex-shrink: 0; margin-top: 0; }
-  .city-illus img { height: 280px; }
-  .info-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .city-text { flex: 1; min-width: 0; }
+  .city-illus { width: 340px; flex-shrink: 0; margin-top: 0; }
+  .city-illus img { height: 260px; }
+  /* Grids begrenzen */
+  .info-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 640px; }
+  .flight-row { max-width: 680px; }
 
   /* ── Plan ── */
   .plan-img-wrap { height: 300px; }
@@ -816,8 +849,8 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
       <p class="hero-sub">Estland</p>
     </div>
   </div>
-  <div class="home-body-inner">
-  <div class="home-section">>Flugdetails</div>
+  <div class="home-section">
+    <div class="hs-label">Flugdetails</div>
     <div class="flight-row">
       <div class="fr-icon">✈️</div>
       <div class="fr-body">
@@ -856,7 +889,7 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
         <a href="https://de.wikipedia.org/wiki/Tallinn" target="_blank" style="display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--gold);text-decoration:none;letter-spacing:1px;border:1px solid rgba(184,137,46,0.3);padding:5px 12px;border-radius:20px;">📖 Wikipedia · Tallinn ↗</a>
       </div>
       <div class="city-illus">
-        <img src="assets/illustration-old-town.png"
+        <img src="assets/header-itinerary.png"
              alt="Tallinn Altstadt — Straße mit Café, Turm und mittelalterlichen Gebäuden"
              loading="lazy">
       </div>
@@ -874,14 +907,7 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
       Anfang September liegt Tallinn in einem goldenen Übergang zwischen Sommer und Herbst, tagsüber meist 15–19°C bei frischer, klarer Luft. Morgens und abends kühlt es merklich ab — ein leichter Mantel oder Schal gehört ins Gepäck. Gelegentliche Regenschauer sind möglich, das weiche nordische Licht macht die Stadt zu dieser Jahreszeit aber besonders atmosphärisch.
     </div>
   </div>
-  <div class="home-section">
-    <div class="hs-label">Navigation</div>
-    <div class="nav-hint">
-      <div class="nh" onclick="nav('plan')"><span class="nh-icon">📅</span><span class="nh-text">Reiseplan</span></div>
-      <div class="nh" onclick="nav('map')"><span class="nh-icon">📍</span><span class="nh-text">Karte</span></div>
-      <div class="nh" onclick="nav('entd')"><span class="nh-icon">☰</span><span class="nh-text">Alle Orte</span></div>
-    </div>
-  </div>
+
 </div>
 
 <!-- ── PLAN ── -->
