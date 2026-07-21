@@ -136,9 +136,6 @@ body{font-family:Palatino,'Palatino Linotype','Book Antiqua',Georgia,serif;color
 .pin-home-ring{border:3px solid var(--gold)!important;box-shadow:0 0 0 2px rgba(184,137,46,0.4),0 3px 10px rgba(0,0,0,0.35)!important;}
 
 .dp-close{position:absolute;top:14px;right:18px;background:var(--navy-faint);border:none;border-radius:50%;width:30px;height:30px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-dim);}
-
-/* ── MEHR ── */
-#s-mehr{}
 .mehr-header{padding:34px 22px 16px;border-bottom:1px solid var(--divider);}
 .mehr-header-eye{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:3px;}
 .mehr-header-title{font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:400;color:var(--navy);}
@@ -157,6 +154,14 @@ body{font-family:Palatino,'Palatino Linotype','Book Antiqua',Georgia,serif;color
 
 /* ── BOTTOM NAV ── */
 #bottom-nav{display:flex;border-top:1px solid var(--divider);background:rgba(250,246,238,0.97);backdrop-filter:blur(10px);flex-shrink:0;}
+.nav-btn{flex:1;display:flex;align-items:center;justify-content:center;padding:11px 0 15px;background:transparent;border:none;cursor:pointer;font-size:22px;opacity:.28;transition:opacity .2s;font-family:inherit;}
+.nav-btn.active{opacity:1;}
+.nav-btn .nb-icon,.nav-btn .nb-label{display:none;}
+.nb-par{font-family:Georgia,'Times New Roman',serif;font-size:16px;font-weight:700;color:var(--navy);}
+.inner-tabs-bar{display:flex;border-bottom:1px solid var(--divider);background:var(--parchment);flex-shrink:0;}
+.itab{flex:1;padding:9px 0;text-align:center;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);border-bottom:2px solid transparent;cursor:pointer;background:transparent;border-top:none;border-left:none;border-right:none;font-family:inherit;transition:color .2s;}
+.itab.active{color:var(--navy);border-bottom-color:var(--gold);}
+.mpi-audio{font-size:12px;margin-right:2px;flex-shrink:0;}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 0 12px;background:transparent;border:none;cursor:pointer;opacity:.32;transition:opacity .2s;font-family:Palatino,'Palatino Linotype','Book Antiqua',Georgia,serif;}
 .nav-btn.active{opacity:1;}
 .nav-btn:hover{opacity:.65;}
@@ -237,7 +242,7 @@ body{font-family:Palatino,'Palatino Linotype','Book Antiqua',Georgia,serif;color
     <div class="nav-hint">
       <div class="nh" onclick="nav('plan')"><span class="nh-icon">📅</span><span class="nh-text">Reiseplan</span></div>
       <div class="nh" onclick="nav('map')"><span class="nh-icon">📍</span><span class="nh-text">Karte</span></div>
-      <div class="nh" onclick="nav('mehr')"><span class="nh-icon">☰</span><span class="nh-text">Alle Orte</span></div>
+      <div class="nh" onclick="nav('entd')"><span class="nh-icon">☰</span><span class="nh-text">Alle Orte</span></div>
     </div>
   </div>
 </div>
@@ -274,70 +279,58 @@ body{font-family:Palatino,'Palatino Linotype','Book Antiqua',Georgia,serif;color
 </div>
 
 <!-- ── MEHR ── -->
-<div class="screen" id="s-mehr">
-  <div class="mehr-header">
-    <div class="mehr-header-eye">Entdecken</div>
-    <div class="mehr-header-title">Alle Orte</div>
+<div class="screen" id="s-entd">
+  <div style="padding:34px 22px 14px;border-bottom:1px solid var(--divider);flex-shrink:0;">
+    <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:3px;">Entdecken</div>
+    <div style="font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:400;color:var(--navy);">Audio & Orte</div>
   </div>
-  <div id="mehr-content" style="flex:1;overflow-y:auto;padding-bottom:20px;"></div>
+  <div class="inner-tabs-bar">
+    <button class="itab active" id="itab-audio" onclick="showEntdTab('audio')">🎧 Audio Guide</button>
+    <button class="itab" id="itab-orte" onclick="showEntdTab('orte')">📖 Alle Orte</button>
+  </div>
+  <div style="flex:1;overflow:hidden;position:relative;">
+    <div id="entd-audio" style="position:absolute;inset:0;overflow-y:auto;padding:10px 14px 20px;scrollbar-width:none;display:flex;flex-direction:column;">
+      <div id="audio-list"></div>
+    </div>
+    <div id="entd-orte" style="position:absolute;inset:0;overflow-y:auto;padding:0;scrollbar-width:none;display:none;">
+      <div id="orte-list"></div>
+    </div>
+  </div>
 </div>
 
 <!-- ── IMPRESSUM ── -->
 <div class="screen" id="s-impr">
-  <div style="padding:34px 22px 16px;border-bottom:1px solid var(--divider);">
+  <div style="padding:34px 22px 14px;border-bottom:1px solid var(--divider);flex-shrink:0;">
     <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:3px;">Rechtliches</div>
     <div style="font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:400;color:var(--navy);">Impressum</div>
   </div>
-  <div style="overflow-y:auto;padding:20px 22px 90px;scrollbar-width:none;">
-    <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid rgba(184,137,46,0.2);">Betreiber</div>
-    <div style="font-size:14px;color:var(--navy);line-height:2;margin-bottom:20px;">
-      Clemens Schleinzer<br>
-      Enzersdorfer Straße 9/2/2<br>
-      2401 Fischamend<br>
-      Österreich<br>
-      <a href="mailto:schleinzer@gmail.com" style="color:var(--gold);text-decoration:none;">schleinzer@gmail.com</a>
+  <div style="flex:1;overflow-y:auto;padding:20px 22px 20px;scrollbar-width:none;">
+    <div style="margin-bottom:20px;">
+      <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(184,137,46,0.2);">Betreiber · §5 ECG</div>
+      <div style="font-size:13px;color:var(--navy);line-height:1.9;">Clemens Schleinzer<br>Enzersdorfer Straße 9/2/2<br>2401 Fischamend, Österreich<br><a href="mailto:schleinzer@gmail.com" style="color:var(--gold);text-decoration:none;">schleinzer@gmail.com</a></div>
     </div>
-    <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid rgba(184,137,46,0.2);">Zweck</div>
-    <div style="font-size:13px;color:var(--text-dim);line-height:1.7;font-style:italic;margin-bottom:20px;">
-      Diese Website ist eine private, nicht-kommerzielle Reise-App und dient ausschließlich persönlichen Zwecken. Es werden keine personenbezogenen Daten gespeichert oder verarbeitet.
+    <div style="margin-bottom:20px;">
+      <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(184,137,46,0.2);">Zweck</div>
+      <div style="font-size:12px;color:var(--text-dim);line-height:1.7;font-style:italic;">Private, nicht-kommerzielle Reise-App ohne Werbung oder Monetarisierung. Es werden keine personenbezogenen Daten gespeichert oder verarbeitet.</div>
     </div>
-    <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid rgba(184,137,46,0.2);">Datenschutz</div>
-    <div style="font-size:13px;color:var(--text-dim);line-height:1.7;font-style:italic;margin-bottom:8px;">
-      Für die Kartendarstellung werden Kacheln von <a href="https://www.openstreetmap.org/copyright" target="_blank" style="color:var(--gold);text-decoration:none;">OpenStreetMap</a> und <a href="https://carto.com/privacy" target="_blank" style="color:var(--gold);text-decoration:none;">CARTO</a> geladen. Dabei wird Ihre IP-Adresse an diese Dienste übertragen.
+    <div style="margin-bottom:20px;">
+      <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(184,137,46,0.2);">Datenschutz · DSGVO</div>
+      <div style="font-size:12px;color:var(--text-dim);line-height:1.7;font-style:italic;">Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse). Für die Kartendarstellung werden Kacheln von <a href="https://www.openstreetmap.org/copyright" target="_blank" style="color:var(--gold);text-decoration:none;">OpenStreetMap</a> und <a href="https://carto.com/privacy" target="_blank" style="color:var(--gold);text-decoration:none;">CARTO</a> geladen. Links führen zu <a href="https://policies.google.com/privacy" target="_blank" style="color:var(--gold);text-decoration:none;">Google Maps</a>. Dabei kann Ihre IP-Adresse übertragen werden. Alle Schriften sind systemseitig installiert. Keine Tracking-Dienste.</div>
     </div>
-    <div style="font-size:13px;color:var(--text-dim);line-height:1.7;font-style:italic;">
-      Alle verwendeten Schriften sind systemseitig installiert — es werden keine externen Schriftdienste aufgerufen.
+    <div>
+      <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(184,137,46,0.2);">Betroffenenrechte</div>
+      <div style="font-size:12px;color:var(--text-dim);line-height:1.7;font-style:italic;">Sie haben das Recht auf Auskunft, Berichtigung und Löschung Ihrer Daten (Art. 15–17 DSGVO). Anfragen an: <a href="mailto:schleinzer@gmail.com" style="color:var(--gold);text-decoration:none;">schleinzer@gmail.com</a></div>
     </div>
   </div>
-</div>
-
-<!-- ── AUDIO ── -->
-<div class="screen" id="s-audio">
-  <div style="padding:34px 22px 14px;border-bottom:1px solid var(--divider);flex-shrink:0;">
-    <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:3px;">Persönlicher Reiseführer</div>
-    <div style="font-family:Georgia,serif;font-size:24px;font-weight:400;color:var(--navy);">Audio Guide</div>
-    <div style="font-size:12px;color:var(--text-dim);font-style:italic;margin-top:4px;">Deutsch · ca. 2 Min. pro Stop</div>
-  </div>
-  <div id="audio-list" style="flex:1;overflow-y:auto;padding:10px 14px 20px;scrollbar-width:none;"></div>
 </div>
 
 <!-- ── BOTTOM NAV ── -->
 <nav id="bottom-nav">
-  <button class="nav-btn active" id="btn-home" onclick="nav('home')">
-    <span class="nb-icon">🏠</span><span class="nb-label">Home</span>
-  </button>
-  <button class="nav-btn" id="btn-plan" onclick="nav('plan')">
-    <span class="nb-icon">📅</span><span class="nb-label">Plan</span>
-  </button>
-  <button class="nav-btn" id="btn-map" onclick="nav('map')">
-    <span class="nb-icon">📍</span><span class="nb-label">Karte</span>
-  </button>
-  <button class="nav-btn" id="btn-audio" onclick="nav('audio')">
-    <span class="nb-icon">🎧</span><span class="nb-label">Audio</span>
-  </button>
-  <button class="nav-btn" id="btn-mehr" onclick="nav('mehr')">
-    <span class="nb-icon">☰</span><span class="nb-label">Mehr</span>
-  </button>
+  <button class="nav-btn active" id="btn-home" onclick="nav('home')">🏠</button>
+  <button class="nav-btn" id="btn-map" onclick="nav('map')">📍</button>
+  <button class="nav-btn" id="btn-entd" onclick="nav('entd')">🔭</button>
+  <button class="nav-btn" id="btn-plan" onclick="nav('plan')">📅</button>
+  <button class="nav-btn" id="btn-impr" onclick="nav('impr')"><span class="nb-par">§</span></button>
 </nav>
 
 <!-- ── DETAIL PANEL ── -->
@@ -655,65 +648,73 @@ function renderDay() {
   `).join('');
 }
 
-// Mehr screen
-function renderMehr() {
+
+
+// ── ENTDECKEN TAB ────────────────────────────────────
+let currentEntdTab = 'audio';
+function showEntdTab(tab) {
+  currentEntdTab = tab;
+  const audio = document.getElementById('entd-audio');
+  const orte  = document.getElementById('entd-orte');
+  if (audio) audio.style.display = tab === 'audio' ? 'flex' : 'none';
+  if (orte)  orte.style.display  = tab === 'orte'  ? 'block' : 'none';
+  document.querySelectorAll('.itab').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('itab-' + tab);
+  if (btn) btn.classList.add('active');
+}
+
+function openInAudio(pid) {
+  if (document.getElementById('s-entd') &&
+      !document.getElementById('s-entd').classList.contains('active')) {
+    nav('entd');
+  }
+  showEntdTab('audio');
+  setTimeout(() => {
+    const card = document.getElementById('acard-' + pid);
+    if (!card) return;
+    document.querySelectorAll('.ac-player.open').forEach(p => p.classList.remove('open'));
+    document.querySelectorAll('.audio-card.is-open').forEach(p => p.classList.remove('is-open'));
+    const player = document.getElementById('acp-' + pid);
+    if (player) { player.classList.add('open'); card.classList.add('is-open'); }
+    card.scrollIntoView({behavior:'smooth', block:'center'});
+  }, 80);
+}
+
+function renderOrte() {
   const catOrder = ['hotel','sightseeing','viewpoint','restaurant','cafe','bar','kultur','streetart','park'];
-  const container = document.getElementById('mehr-content');
-  const impressumItem = `<div class="mehr-cat-section"><div class="mehr-cat-header" onclick="nav('impr')" style="cursor:pointer;"><div class="mehr-cat-dot" style="background:rgba(26,39,68,0.3)"></div><div class="mehr-cat-name" style="font-size:14px;color:var(--text-dim);">§ Impressum & Datenschutz</div></div></div>`;
+  const container = document.getElementById('orte-list');
+  if (!container) return;
   container.innerHTML = catOrder.map(cat => {
     const catPlaces = places.filter(p => p.cat === cat);
     if (!catPlaces.length) return '';
-    const c = CATS[cat];
-    return `
-      <div class="mehr-cat-section">
-        <div class="mehr-cat-header">
-          <div class="mehr-cat-dot" style="background:${c.color}"></div>
-          <div class="mehr-cat-name">${c.emoji} ${c.label}</div>
-          <div class="mehr-cat-count">${catPlaces.length} Orte</div>
-        </div>
-        <div class="mehr-place-list">
-          ${catPlaces.map(p => `
-            <div class="mehr-place-item" onclick="showDetail(places.find(x=>x.id===${p.id}))">
-              <div class="mpi-emoji">${p.emoji||c.emoji}</div>
-              <div class="mpi-name">${p.name}</div>
-              <div class="mpi-arrow">›</div>
-            </div>
-          `).join('')}
-        </div>
+    const ct = CATS[cat];
+    return `<div class="mehr-cat-section">
+      <div class="mehr-cat-header">
+        <div class="mehr-cat-dot" style="background:${ct.color}"></div>
+        <div class="mehr-cat-name">${ct.emoji} ${ct.label}</div>
+        <div class="mehr-cat-count">${catPlaces.length} Orte</div>
       </div>
-    `;
-  }).join('') + impressumItem;
+      <div class="mehr-place-list">
+        ${catPlaces.map(p => `
+          <div class="mehr-place-item" onclick="${p.audio
+            ? `openInAudio(${p.id})`
+            : `showDetail(places.find(x=>x.id===${p.id}))`}">
+            <div class="mpi-emoji">${p.emoji || ct.emoji}</div>
+            <div class="mpi-name">${p.name}</div>
+            ${p.audio ? '<div class="mpi-audio">🎧</div>' : ''}
+            <div class="mpi-arrow">›</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
 }
 
-// Init
-renderDay();
-renderMehr();
-renderAudio();
-
-// ── AUDIO GUIDE ──────────────────────────────────────────────────────
+// ── AUDIO PLAYER ─────────────────────────────────────
 let curAudioEl = null, curAudioPid = null, curAudioKey = null;
 
 function fmtTime(s) {
   if (!s || isNaN(s)) return '0:00';
   return Math.floor(s/60) + ':' + String(Math.floor(s%60)).padStart(2,'0');
-}
-
-function toggleHomeAudio(audioId, btnId) {
-  const audio = document.getElementById(audioId);
-  const btn = document.getElementById(btnId);
-  if (curAudioEl && curAudioEl !== audio) {
-    curAudioEl.pause();
-    updateAudioBtn(curAudioPid, false);
-  }
-  if (audio.paused) {
-    audio.play();
-    btn.textContent = '⏸';
-    curAudioEl = audio;
-    curAudioPid = null;
-  } else {
-    audio.pause();
-    btn.textContent = '▶';
-  }
 }
 
 function toggleAudio(pid) {
@@ -723,7 +724,6 @@ function toggleAudio(pid) {
     curAudioEl.pause();
     if (curAudioPid) updateAudioBtn(curAudioPid, false);
   }
-  // Open card
   const player = document.getElementById('acp-' + pid);
   if (!player.classList.contains('open')) {
     document.querySelectorAll('.ac-player.open').forEach(p => p.classList.remove('open'));
@@ -754,10 +754,11 @@ function toggleAudio(pid) {
 }
 
 function updateAudioBtn(pid, playing) {
+  const icon = playing ? '⏸' : '▶';
   const b1 = document.getElementById('abtn-' + pid);
   const b2 = document.getElementById('amain-' + pid);
-  if (b1) b1.textContent = playing ? '⏸' : '▶';
-  if (b2) b2.textContent = playing ? '⏸' : '▶';
+  if (b1) b1.textContent = icon;
+  if (b2) b2.textContent = icon;
 }
 
 function audioProgress(pid) {
